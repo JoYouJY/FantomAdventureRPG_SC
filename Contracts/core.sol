@@ -138,11 +138,11 @@ library core {
 
 
      /**
-    * @dev Mint a myPet egg based on a given random number.
-    * @param _deRand The random number used to generate the myPet.
-    * @return myPet The newly minted myPet.
+    * @dev Mint a Pet egg based on a given random number.
+    * @param _deRand The random number used to generate the Pet.
+    * @return Pet The newly minted Pet.
     */
-    function mintEgg(uint _deRand) external pure returns (A.myPets memory myPet) {
+    function mintEgg(uint _deRand) external pure returns (A.Pets memory Pet) {
         uint8 _randegg = uint8(_RandNumb(_deRand,99,0));
         if (_randegg >= 95) { //5%
             _randegg = 4;
@@ -155,8 +155,8 @@ library core {
         } else { //28%
             _randegg = 0;
         }
-        myPet = A.myPets(
-            _randegg, // type of myPet species (egg 0 to 4)
+        Pet = A.Pets(
+            _randegg, // type of Pet species (egg 0 to 4)
             10**_randegg, // gene
             A.attributes(
                 uint8(_RandNumb(_deRand<<8,150,50)), // happiness
@@ -187,25 +187,25 @@ library core {
         ); 
     }
 
-    function HatchEgg(A.myPets memory _Egg, address _ownerof) 
-    external view returns(A.myPets memory myPet) {
-        myPet = _Egg;
+    function HatchEgg(A.Pets memory _Egg, address _ownerof) 
+    external view returns(A.Pets memory Pet) {
+        Pet = _Egg;
         require(msg.sender == _ownerof, "xPermission");
         
-        require ((myPet.species <=4  //an egg
-                || myPet.time.endurance < block.timestamp || myPet.time.deadtime < block.timestamp ) //or dead
-                , "xmyPetStatusVspecies"); 
+        require ((Pet.species <=4  //an egg
+                || Pet.time.endurance < block.timestamp || Pet.time.deadtime < block.timestamp ) //or dead
+                , "xPetStatusVspecies"); 
         A.powers memory _pwrs;
         uint64 timenow = uint64(block.timestamp);
-        if      (myPet.species==4)   {_pwrs = A.powers(28000,126,26,26);}//Amorp Egg
-        else if (myPet.species==3)   {_pwrs = A.powers(47000,135,9,20);} //Mech Egg
-        else if (myPet.species==2)   {_pwrs = A.powers(23000,115,38,24);} //Volant Egg
-        else if (myPet.species==1)   {_pwrs = A.powers(26000,145,19,10);} //Quaped Egg
-        else   /*myPet.species==0*/  {_pwrs = A.powers(24000,118,18,40);} //Biped Egg
-        myPet.species = myPet.species + 5;
-        myPet.attribute.stage = 1;
-        myPet.power = _pwrs;
-        myPet.time = A.timings (      timenow+lifeGainYouth, //deadtime
+        if      (Pet.species==4)   {_pwrs = A.powers(28000,126,26,26);}//Amorp Egg
+        else if (Pet.species==3)   {_pwrs = A.powers(47000,135,9,20);} //Mech Egg
+        else if (Pet.species==2)   {_pwrs = A.powers(23000,115,38,24);} //Volant Egg
+        else if (Pet.species==1)   {_pwrs = A.powers(26000,145,19,10);} //Quaped Egg
+        else   /*Pet.species==0*/  {_pwrs = A.powers(24000,118,18,40);} //Biped Egg
+        Pet.species = Pet.species + 5;
+        Pet.attribute.stage = 1;
+        Pet.power = _pwrs;
+        Pet.time = A.timings (      timenow+lifeGainYouth, //deadtime
                                         timenow+INITIAL_ENDURANCE, //endurance
                                         0, //frozen time
                                         timenow-INITIAL_STAMINA, //stamina
@@ -213,21 +213,21 @@ library core {
                                     ); 
     }
 
-    function FeedmyPet(uint _deRand, A.myPets memory _myPet, uint8 _foodtype,address _ownerof) 
-    external view returns(A.myPets memory myPet) { //Foodtype 0 to 5
-        myPet = _myPet;
-        require (myPet.species >4  //not an egg
-                , "xmyPetStatusVspecies"); 
+    function FeedPet(uint _deRand, A.Pets memory _Pet, uint8 _foodtype,address _ownerof) 
+    external view returns(A.Pets memory Pet) { //Foodtype 0 to 5
+        Pet = _Pet;
+        require (Pet.species >4  //not an egg
+                , "xPetStatusVspecies"); 
         require(msg.sender == _ownerof, "xPermission");
         uint64 _timenow = uint64(block.timestamp);
         uint64 _full;
         uint32 _weight;
         uint8 _happy;
-        if (myPet.time.endurance<_timenow) { //if myPet die of hunger but still has life time
-            myPet.time.endurance = _timenow; //revive from hunger
+        if (Pet.time.endurance<_timenow) { //if Pet die of hunger but still has life time
+            Pet.time.endurance = _timenow; //revive from hunger
         }
-        uint64 _enduranceleft = myPet.time.endurance-_timenow;
-        if (myPet.time.deadtime >= _timenow && myPet.time.endurance >= _timenow) { //Alive & Active
+        uint64 _enduranceleft = Pet.time.endurance-_timenow;
+        if (Pet.time.deadtime >= _timenow && Pet.time.endurance >= _timenow) { //Alive & Active
             //Choose Your Food :p
             if (_foodtype==6){_full = 9 hours; _weight = 9440; _happy = 10;}//Salmon gain life at main contract! **********
             else if (_foodtype==5){_full = 11 hours; _weight = 3135; _happy = 9;} //big vege
@@ -237,33 +237,33 @@ library core {
             else if (_foodtype==1){_full = 8 hours; _weight = 12700; _happy = 8;} //Giant Meat
             else {_full = 4 hours; _weight = 5000; _happy = 5;} // Meat 0
             //Eating
-            myPet.attribute.weight = add32b(myPet.attribute.weight,_weight);
-            myPet.time.endurance = add64b(myPet.time.endurance,_full);
-            if (myPet.time.endurance-_timenow > FULL_ENDURANCE){ //Your myPet has too full
-                //myPet.exp = myPet.exp + uint32(10*(_full - (myPet.time.endurance - (_timenow+FULL_ENDURANCE))));
-                myPet.time.endurance = _timenow+FULL_ENDURANCE; //cap at FULL_ENDURANCE
-                myPet.attribute.happiness = sub8b(myPet.attribute.happiness,1);
+            Pet.attribute.weight = add32b(Pet.attribute.weight,_weight);
+            Pet.time.endurance = add64b(Pet.time.endurance,_full);
+            if (Pet.time.endurance-_timenow > FULL_ENDURANCE){ //Your Pet has too full
+                //Pet.exp = Pet.exp + uint32(10*(_full - (Pet.time.endurance - (_timenow+FULL_ENDURANCE))));
+                Pet.time.endurance = _timenow+FULL_ENDURANCE; //cap at FULL_ENDURANCE
+                Pet.attribute.happiness = sub8b(Pet.attribute.happiness,1);
             }else { // normal hours, :) happy
-                myPet.attribute.happiness = add8b(myPet.attribute.happiness,_happy);
-                //myPet.exp = myPet.exp + uint32(10*(_full));
+                Pet.attribute.happiness = add8b(Pet.attribute.happiness,_happy);
+                //Pet.exp = Pet.exp + uint32(10*(_full));
             }
-            myPet.exp = myPet.exp + 10*uint32((myPet.time.endurance-_timenow-_enduranceleft));
+            Pet.exp = Pet.exp + 10*uint32((Pet.time.endurance-_timenow-_enduranceleft));
         } 
-        myPet = EVO.checkEvolve(_deRand,myPet);
+        Pet = EVO.checkEvolve(_deRand,Pet);
     }
 
-    function trainmyPet(uint _deRand, A.myPets memory _myPet, uint8 _traintype,address _ownerof) 
-        external view returns(A.myPets memory myPet) { //TrainType 0 to 7
-        myPet = _myPet;
-        require (myPet.species >4  //not an egg
-                , "xmyPetStatusVspecies"); 
+    function trainPet(uint _deRand, A.Pets memory _Pet, uint8 _traintype,address _ownerof) 
+        external view returns(A.Pets memory Pet) { //TrainType 0 to 7
+        Pet = _Pet;
+        require (Pet.species >4  //not an egg
+                , "xPetStatusVspecies"); 
         require(msg.sender == _ownerof, "xPermission");
         uint64 _timenow = uint64(block.timestamp);
         //trait start first to prevent stack too deep, limitation of Solidity
-        if (myPet.time.deadtime > _timenow && myPet.time.endurance > _timenow //myPet still alive
-            && myPet.status == 0) { //Alive & Active
-            uint64 _stamina = sub64b(_timenow,myPet.time.stamina);
-            uint32 _level = _returnLevel(_myPet.exp);
+        if (Pet.time.deadtime > _timenow && Pet.time.endurance > _timenow //Pet still alive
+            && Pet.status == 0) { //Alive & Active
+            uint64 _stamina = sub64b(_timenow,Pet.time.stamina);
+            uint32 _level = _returnLevel(_Pet.exp);
             uint64 _tiredness;
             uint32 _weightloss;
             uint8 _happy;
@@ -301,31 +301,31 @@ library core {
                  _pwrstemp.hitpoints=41200; _pwrstemp.strength=3; _pwrstemp.intellegence=1;}//Push bolder
             require(_stamina >= _tiredness, "too tired");
             //traits affect
-            (_pwrstemp, _happy, _discipline) = traitAddStateTraining(_tiredness, myPet.trait,_pwrstemp, _happy, _discipline);
+            (_pwrstemp, _happy, _discipline) = traitAddStateTraining(_tiredness, Pet.trait,_pwrstemp, _happy, _discipline);
 
             //training 
-            myPet.power.hitpoints = add32B999999L(myPet.power.hitpoints,_pwrstemp.hitpoints*_level/255);
-            myPet.power.strength = add16B999L(myPet.power.strength,uint16(_pwrstemp.strength*_level/255));
-            myPet.power.agility = add16B999L(myPet.power.agility,uint16(_pwrstemp.agility*_level/255));
-            myPet.power.intellegence = add16B999L(myPet.power.intellegence,uint16(_pwrstemp.intellegence*_level/255));
-            myPet.attribute.happiness = sub8b(myPet.attribute.happiness,_happy);
-            myPet.attribute.discipline = add8b(myPet.attribute.discipline,_discipline);
-            myPet.attribute.weight = sub32b(myPet.attribute.weight,_weightloss);
-            if (myPet.attribute.weight == 0) {myPet.attribute.weight = 100;} //minimum weight
+            Pet.power.hitpoints = add32B999999L(Pet.power.hitpoints,_pwrstemp.hitpoints*_level/255);
+            Pet.power.strength = add16B999L(Pet.power.strength,uint16(_pwrstemp.strength*_level/255));
+            Pet.power.agility = add16B999L(Pet.power.agility,uint16(_pwrstemp.agility*_level/255));
+            Pet.power.intellegence = add16B999L(Pet.power.intellegence,uint16(_pwrstemp.intellegence*_level/255));
+            Pet.attribute.happiness = sub8b(Pet.attribute.happiness,_happy);
+            Pet.attribute.discipline = add8b(Pet.attribute.discipline,_discipline);
+            Pet.attribute.weight = sub32b(Pet.attribute.weight,_weightloss);
+            if (Pet.attribute.weight == 0) {Pet.attribute.weight = 100;} //minimum weight
             //EXP
-            myPet.exp = myPet.exp + 32121*uint32(_tiredness/1 minutes);
+            Pet.exp = Pet.exp + 32121*uint32(_tiredness/1 minutes);
             //=======capped by FULL STAMINA=======//
             _stamina = sub64b(_stamina, _tiredness);
             if ( _stamina > (FULL_STAMINA-_tiredness)) { 
-                myPet.time.stamina = _timenow - FULL_STAMINA+_tiredness;
+                Pet.time.stamina = _timenow - FULL_STAMINA+_tiredness;
             } else if (_stamina == 0) {//=0 in unsigned data = stamina go negative! TOO TIRED!
-                myPet.time.stamina = add64b(myPet.time.stamina,_tiredness);
+                Pet.time.stamina = add64b(Pet.time.stamina,_tiredness);
             } else {
-                myPet.time.stamina = add64b(myPet.time.stamina,_tiredness);
+                Pet.time.stamina = add64b(Pet.time.stamina,_tiredness);
             }
             //============
         }
-        myPet = EVO.checkEvolve(_deRand<<18,myPet);
+        Pet = EVO.checkEvolve(_deRand<<18,Pet);
     }
 
     function traitAddStateTraining(uint64 _tiredness, uint8[3] memory _traits, A.powers memory _pwrstemp, uint8 _happy, uint8 _discipline) 
@@ -365,6 +365,93 @@ library core {
                 else if (_traits[i] == 31) {pwrstemp.hitpoints = pwrstemp.hitpoints + 700*_bonushr;} //Careful
             }
     }
+
+    function battlingPet(uint8 rank, uint rand) external pure returns(A.Pets memory _BattlingPet) {
+        //rank 0 = stage1, 1= stage2, 2= stage3, 3=stage4
+        _BattlingPet.attribute.id = 10001;
+        _BattlingPet.attribute.stage = rank+1;
+        _BattlingPet.family = uint16(_RandNumb(rand<<4,4,0));
+        if (rank ==0 ) { 
+            _BattlingPet.species = uint8(_RandNumb(rand,9,5));
+            _BattlingPet.attribute.weight = _RandNumb(rand<<5,2500,1000);
+            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,40000,10000);
+            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,50,10));
+            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,50,10));
+            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,50,10));
+        } else if (rank == 1) {
+            _BattlingPet.species = uint8(_RandNumb(rand,22,10));
+            _BattlingPet.attribute.weight = _RandNumb(rand<<5,4500,1500);
+            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,130000,5000);
+            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,130,55));
+            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,130,55));
+            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,130,55));
+            _BattlingPet.skill = [_BattlingPet.species,0,0];
+        } else if (rank == 2) {
+            _BattlingPet.species = uint8(_RandNumb(rand,42,23)); 
+            _BattlingPet.attribute.weight = _RandNumb(rand<<5,17500,1500);
+            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,420000,145000);
+            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,350,155));
+            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,350,155));
+            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,450,155));
+            _BattlingPet.skill = [uint8(_RandNumb(rand,22,10)),_BattlingPet.species,0];    
+        } else /*if (rank == 3)*/{
+            _BattlingPet.species = uint8(_RandNumb(rand,63,43));
+            _BattlingPet.attribute.weight = _RandNumb(rand<<5,25000,1500);
+            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,800000,275000);
+            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,590,275));
+            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,590,275));
+            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,790,275));
+            _BattlingPet.skill = [uint8(_RandNumb(rand,22,10)),uint8(_RandNumb(rand,42,23)),_BattlingPet.species];   
+        }
+    }
+
+    function TowerPet(uint8 TowerLevel) external pure returns(A.Pets memory _TowerPet) {
+        //rank 0 = stage1, 1= stage2, 2= stage3, 3=stage4
+        _TowerPet.attribute.id = 10001;
+        //TowerLevel 1~20 = level1, 10 level max. so stage 1 to 4, 2.5 stage each.
+        //Towerlevel/41 = stage, max TowerLevel 200, = stage 4 (rounded)
+        //e.g. level 1 and 2 = stage 1, 
+        _TowerPet.attribute.stage = uint8(((TowerLevel*10)+801)/601); //stage: 1 1 2 2 2 3 3 3 4 4 
+        _TowerPet.family = TowerLevel%5; //0 to 4
+
+        if (TowerLevel <= 20 ) { //level1 stage 1
+            _TowerPet.species = 9;
+            _TowerPet.power.hitpoints = 15000+TowerLevel*700;
+            _TowerPet.power.strength = 10+((TowerLevel*75)%50);
+            _TowerPet.power.agility = 10+((TowerLevel*88)%50);
+            _TowerPet.power.intellegence = 10+((TowerLevel*33)%50);
+        } else if (TowerLevel <= 40 ) { //level2 stage 1
+            _TowerPet.species = 9;
+            _TowerPet.power.hitpoints = 18000+((TowerLevel*900)%18000);
+            _TowerPet.power.strength = 30+((TowerLevel*75)%50);
+            _TowerPet.power.agility = 30+((TowerLevel*88)%50);
+            _TowerPet.power.intellegence = 30+((TowerLevel*33)%50);
+            _TowerPet.skill = [_TowerPet.species,0,0];
+        } else if (TowerLevel <= 60 ) { //level3 stage 2
+            _TowerPet.species = 15;
+            _TowerPet.power.hitpoints = 35000+((TowerLevel*1900)%30000);
+            _TowerPet.power.strength = 70+((TowerLevel*75)%70);
+            _TowerPet.power.agility = 70+((TowerLevel*88)%70);
+            _TowerPet.power.intellegence = 70+((TowerLevel*33)%70);
+            _TowerPet.skill = [3,0,0]; 
+        } else if (TowerLevel <= 80 ) { //level4 stage 2
+            _TowerPet.species = 15;
+            _TowerPet.power.hitpoints = 70000+((TowerLevel*1900)%70000);
+            _TowerPet.power.strength = 100+((TowerLevel*75)%100);
+            _TowerPet.power.agility = 100+((TowerLevel*88)%100);
+            _TowerPet.power.intellegence = 120+((TowerLevel*33)%120);
+            _TowerPet.skill = [3,0,0]; 
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 }
 
