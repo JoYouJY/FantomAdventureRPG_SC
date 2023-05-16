@@ -444,17 +444,151 @@ library core {
         }
     }
 
-
-
-
-
-
-
-
-
+    function battlePet(uint _deRand, A.Pets memory _Pet1, A.Pets memory _Pet2) 
+    //check owner at main, because simulation need permissionless
+    external pure returns(bool Mon1Win, uint BattleRhythm, uint8 bit, uint64 OppoDamage) { 
+        //---- The BattleRythm is 256 bits encoded 85 actions(3bits [1bit attacker, 2bits skill]), 
+        // ---- so the battle ended after 85 turns or either one has 0 HP---------------- 
+        //whoever has more HP left win, if same HP, Pet2 win. NO DRAW -----------//
+        uint32 damage;
+        uint32 effort;
+        uint32 actionpoints1 = _Pet2.power.agility; //reverse, Pet2 slow, means Pet1 attack more times
+        uint32 actionpoints2 = _Pet1.power.agility;
+        uint8 weakness; //0 = nothing, 1 = more damage on Pet1, 2= more daamge on Pet2
+                //0 = Desolation, 1=Celestial, 2=Verdant, 3=Fantasy, 4=Abyss
+        //Celestial==Abyss==Desolation==Verdant==Fantasy
+        //1.2x against
+	    //Fantasy==Celestial==Verdant==Abyss==Desolation
+        if ( (_Pet1.family == 3 && _Pet2.family == 1) //Fantasy weaks against Celestial
+           ||(_Pet1.family == 1 && _Pet2.family == 4) //Celestial weaks against Abyss
+           ||(_Pet1.family == 2 && _Pet2.family == 0) //Verdant weaks against Desolation
+           ||(_Pet1.family == 4 && _Pet2.family == 2) //Abyss weaks against Verdant
+           ||(_Pet1.family == 0 && _Pet2.family == 3) //Desolation weaks against Fantasy
+        ) 
+        {weakness = 1;}
+        //---
+        if ( (_Pet2.family == 3 && _Pet1.family == 1) //Fantasy weaks against Celestial
+           ||(_Pet2.family == 1 && _Pet1.family == 4) //Celestial weaks against Abyss
+           ||(_Pet2.family == 2 && _Pet1.family == 0) //Verdant weaks against Desolation
+           ||(_Pet2.family == 4 && _Pet1.family == 2) //Abyss weaks against Verdant
+           ||(_Pet2.family == 0 && _Pet1.family == 3) //Desolation weaks against Fantasy
+        ) 
+        {weakness = 2;}
+        // because who has less actionpoints move next
+        //while<= 253 bit
+        while (bit<=253 && _Pet1.power.hitpoints > 0 && _Pet2.power.hitpoints > 0 ){
+            if (actionpoints1 <= actionpoints2) { //Pet1 move
+                bit++; //bit ++ first, means set '0'
+                _deRand = _deRand<<3;
+                (BattleRhythm,effort,damage)=_chooseSkill(_deRand,_Pet1,BattleRhythm,bit);
+                bit=bit+2; //2bits has set in the function above for skill.
+                actionpoints1 = actionpoints1 + effort +  _Pet2.power.agility; // purposely reverse Pet2 agi to action 1
+                if (weakness == 2) {damage = damage/100*125;}
+                _Pet2.power.hitpoints = sub32b(_Pet2.power.hitpoints,damage);
+                OppoDamage += damage;
+            } else { //Pet2 move
+                BattleRhythm = BattleRhythm + 2**bit; //encode who attack, 1 = Pet2 attack
+                bit++; //bit++ before set, means set '1'
+                _deRand = _deRand<<3;
+                (BattleRhythm,effort,damage)=_chooseSkill(_deRand,_Pet2,BattleRhythm,bit);
+                bit=bit+2; //2bits has set in the function above.
+                actionpoints2 = actionpoints2 + effort +  _Pet1.power.agility; // purposely reverse Pet1 agi to action 2
+                if (weakness == 1) {damage = damage/100*125;}
+                _Pet1.power.hitpoints = sub32b(_Pet1.power.hitpoints,damage);
+            }
+        }
+        if (_Pet1.power.hitpoints >= _Pet2.power.hitpoints) {Mon1Win = true;} else {Mon1Win = false;}
+        
+    }
+    function _chooseSkill(uint _deRand, A.Pets memory _Pet, uint _BattleRhythm, uint8 _bit)
+    private pure returns( uint BattleRhythm, uint32 effort, uint32 damage) {
+        uint8 skill;
+        BattleRhythm = _BattleRhythm;
+        if (_RandNumb(_deRand,1300,1) <= 301+uint16(_Pet.power.intellegence)) { //use skills based 30% chances
+            skill = uint8(_RandNumb(_deRand<<3,2,0)); //translate to skill array 0 1 2
+            //skill == 0 means no need to set anything on skill (00)
+            if (skill == 1) {BattleRhythm = BattleRhythm + 2**_bit;} //binary 00 (01) 10, set LSB
+            _bit++;
+            if (skill == 2) {BattleRhythm = BattleRhythm + 2**_bit;} //binary 00 01 (10), set MSB
+            //no need _bit++ as _bit won't return
+            (damage,effort) = _SkillsState(_Pet.power,_Pet.attribute, _Pet.skill[skill]);
+        } else {//normal attack, also encoded as skill array (11), Skill[3] always normal attack
+            BattleRhythm = BattleRhythm + 2**_bit;
+            _bit++;
+            BattleRhythm = BattleRhythm + 2**_bit;
+            damage = _Pet.power.strength;
+            damage = damage * 50;
+            effort = 100;
+        } 
+        
+    }
+    function _SkillsState(A.powers memory _powers, A.attributes memory _attributes, uint8 SkillNumber)
+    private pure returns(uint32 damage, uint32 effort) {
+        // you won't get a skill before Stage 2
+        uint64 HP = _powers.hitpoints;
+        uint32 STR = _powers.strength;
+        uint32 AGI = _powers.agility;
+        uint32 INT = _powers.intellegence;
+        uint32 HAPPINESS = _attributes.happiness;
+        uint32 DISCIPLINE = _attributes.discipline;
+        if (SkillNumber == 0) {damage=STR*50; effort = 100;}
+        else if (SkillNumber == 10) {damage= 50*STR + 35*AGI ; effort = 160;}
+        else if (SkillNumber == 11) {damage= 85*STR + 15*INT ; effort = 155;}
+        else if (SkillNumber == 12) {damage= 115*STR ; effort = 200;}
+        else if (SkillNumber == 13) {damage= 30*STR + 30*AGI + 30*INT ; effort = 150;}
+        else if (SkillNumber == 14) {damage= 105*STR ; effort = 190;}
+        else if (SkillNumber == 15) {damage= 40*STR + 63*AGI ; effort = 160;}
+        else if (SkillNumber == 16) {damage= 40*STR + 60*AGI ; effort = 170;}
+        else if (SkillNumber == 17) {damage= 80*STR + 35*INT ; effort = 195;}
+        else if (SkillNumber == 18) {damage= 90*STR + 40*INT ; effort = 220;}
+        else if (SkillNumber == 19) {damage= 50*STR + 100*INT ; effort = 230;}
+        else if (SkillNumber == 20) {damage= 150*STR ; effort = 230;}
+        else if (SkillNumber == 21) {damage= 50*STR + 100*AGI ; effort = 230;}
+        else if (SkillNumber == 22) {damage= 50*STR + 50*AGI + 50*INT ; effort = 230;}
+        else if (SkillNumber == 23) {damage= 75*STR + 125*AGI ; effort = 265;}
+        else if (SkillNumber == 24) {damage= 135*STR + 75*AGI ; effort = 270;}
+        else if (SkillNumber == 25) {damage= 200*AGI ; effort = 266;}
+        else if (SkillNumber == 26) {damage= uint32((14*HP)/100) + 125*STR ; effort = 287;}
+        else if (SkillNumber == 27) {damage= 90*STR + 90*AGI + 90*INT ; effort = 330;}
+        else if (SkillNumber == 28) {damage= 225*STR ; effort = 290;}
+        else if (SkillNumber == 29) {damage= 50*STR + 125*AGI ; effort = 258;}
+        else if (SkillNumber == 30) {damage= 90*STR + 110*AGI ; effort = 277;}
+        else if (SkillNumber == 31) {damage= 150*STR + 50*AGI ; effort = 302;}
+        else if (SkillNumber == 32) {damage= 165*STR + 175*DISCIPLINE ; effort = 298;}
+        else if (SkillNumber == 33) {damage= 185*INT ; effort = 244;}
+        else if (SkillNumber == 34) {damage= 55*STR + 140*INT ; effort = 280;}
+        else if (SkillNumber == 35) {damage= 250*STR ; effort = 295;}
+        else if (SkillNumber == 36) {damage= 210*STR ; effort = 300;}
+        else if (SkillNumber == 37) {damage= uint32((15*HP)/100) + 125*STR ; effort = 310;}
+        else if (SkillNumber == 38) {damage= 125*STR + 40*AGI + 40*INT ; effort = 275;}
+        else if (SkillNumber == 39) {damage= 185*STR + 50*AGI ; effort = 295;}
+        else if (SkillNumber == 40) {damage= 158*STR + 50*AGI + 25*INT ; effort = 287;}
+        else if (SkillNumber == 41) {damage= 160*STR + 50*INT + 175*HAPPINESS ; effort = 320;}
+        else if (SkillNumber == 42) {damage= 160*STR +50*INT + 175*DISCIPLINE ; effort = 315;}
+        else if (SkillNumber == 43) {damage= 185*STR + 100*AGI ; effort = 380;}
+        else if (SkillNumber == 44) {damage= 170*STR + 170*INT ; effort = 395;}
+        else if (SkillNumber == 45) {damage= uint32((25*HP)/100) + 100*STR ; effort = 376;}
+        else if (SkillNumber == 46) {damage= 150*STR + 150*INT ; effort = 380;}
+        else if (SkillNumber == 47) {damage= 325*STR ; effort = 400;}
+        else if (SkillNumber == 48) {damage= 150*STR + 125*AGI + 50*INT ; effort = 375;}
+        else if (SkillNumber == 49) {damage= 125*STR + 125*AGI + 125*INT ; effort = 450;}
+        else if (SkillNumber == 50) {damage= 175*AGI + 100*INT + 200*HAPPINESS ; effort = 380;}
+        else if (SkillNumber == 51) {damage= 75*STR + 200*INT + 250*DISCIPLINE ; effort = 385;}
+        else if (SkillNumber == 52) {damage= 150*STR + 125*AGI + 175*HAPPINESS ; effort = 370;}
+        else if (SkillNumber == 53) {damage= 175*STR + 700*DISCIPLINE ; effort = 395;}
+        else if (SkillNumber == 54) {damage= 200*STR + 150*INT ; effort = 450;}
+        else if (SkillNumber == 55) {damage= 115*STR + 115*AGI + 115*INT ; effort = 400;}
+        else if (SkillNumber == 56) {damage= 150*STR + 150*INT ; effort = 375;}
+        else if (SkillNumber == 57) {damage= 125*STR + 100*STR + 100*INT ; effort = 360;}
+        else if (SkillNumber == 58) {damage= 60*STR + 75*INT + 750*HAPPINESS ; effort = 380;}
+        else if (SkillNumber == 59) {damage= 345*INT ; effort = 400;}
+        else if (SkillNumber == 60) {damage= 225*STR + 85*AGI ; effort = 360;}
+        else if (SkillNumber == 61) {damage= 160*STR + 160*INT ; effort = 380;}
+        else if (SkillNumber == 62) {damage= 125*STR + 200*INT ; effort = 385;}
+        else if (SkillNumber == 63) {damage= 125*STR + 125*AGI + 125*INT ; effort = 400;}
+    }
 
 }
-
 
 
 
