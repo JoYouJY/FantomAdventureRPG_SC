@@ -128,6 +128,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         Pet[_id] = core.trainPet(rand, Pet[_id], _trainingtype,ownerOf(_id)); //requirement check on lib
         emit StatChangedResult(Pet[_id]);
     }
+
     function BattlePet(uint _id, uint8 _rank) public {
         //_rank 0~3 is AI based on self CP. 
         //_rank 4 = mysterious tower has 10 level.
@@ -146,14 +147,12 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         if (_rank <= 3) { //tag along with Mon1Win to reduce stack
             BattlingPet = core.battlingPet(_rank,rand);
         } else {
-            BattlingPet = core.TowerPet(TowerLevel,rand);
+            BattlingPet = core.TowerPet(TowerLevel[msg.sender]);
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
 
-
-        A.Pets memory BattlingPet;
         if (Mon1Win == false) { //tag along with Mon1Win to reduce stack
-            BattlingPet = core.battlingPet(TowerLevel,rand);
+            BattlingPet = core.battlingPet(_rank,rand);
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
         Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank, rand); //exp stars gain   
