@@ -6,7 +6,7 @@ import "./myPet.sol";
 import "./evolution.sol";
 
 library core {
-    uint64 private constant FULL_ENDURANCE = 40 hours;
+    uint64 private constant FULL_ENDURANCE = 24 hours;
     uint64 private constant INITIAL_STAMINA = 40 minutes;
     uint64 private constant FULL_STAMINA = 40 minutes;
     uint64 private constant INITIAL_ENDURANCE = 6 hours;
@@ -110,28 +110,9 @@ library core {
         return c;
     }
     //-----------------------------------------------------
-    function _returnLevel(uint32 _exp) private pure returns (uint32 _level){
-        _level= sqrt32b(_exp)/258 + 1; //min level 1 - max level 255
-        
-    }
+  
 
-    function _getGene(uint256 _gene, uint8 _order) private pure returns (uint8) { 
-        //order position count from 1 from LSB
-        //e.g. gene 1335745, order 2, returns 4 
-        return uint8((_gene/10**(_order-1)) - (_gene / 10**(_order))*10);
-    }
-    function _setGene(uint256 _gene, uint8 _order, uint8 _setNum) private pure returns (uint256 gene) { 
-        //order position count from 1 from LSB
-        //e.g. gene 1335745, order 2, setNum 9 returns 1335795
-        
-        uint x = _gene - (_gene/(10**(_order-1))*(10**(_order-1))); //xxX45
-        uint y = (_gene/(10**(_order))*(10**(_order))); //123Xxx
-        gene = _setNum*10**(_order-1) + x + y;    
-    }
-
-    function _ShinningGive(uint _rand, uint32 _exp) private pure returns (bool){
-        if( _RandNumb(_rand,255,0)<= _returnLevel(_exp) ){return true;} else {return false;}
-    }
+    
 
    
     //----------------------------------------------
@@ -197,11 +178,11 @@ library core {
                 , "xPetStatusVspecies"); 
         A.powers memory _pwrs;
         uint64 timenow = uint64(block.timestamp);
-        if      (Pet.species==4)   {_pwrs = A.powers(28000,126,26,26);}//Amorp Egg
-        else if (Pet.species==3)   {_pwrs = A.powers(47000,135,9,20);} //Mech Egg
-        else if (Pet.species==2)   {_pwrs = A.powers(23000,115,38,24);} //Volant Egg
-        else if (Pet.species==1)   {_pwrs = A.powers(26000,145,19,10);} //Quaped Egg
-        else   /*Pet.species==0*/  {_pwrs = A.powers(24000,118,18,40);} //Biped Egg
+        if      (Pet.species==4)   {_pwrs = A.powers(28000,26,26,26);}//Amorp Egg
+        else if (Pet.species==3)   {_pwrs = A.powers(47000,35,9,20);} //Mech Egg
+        else if (Pet.species==2)   {_pwrs = A.powers(23000,15,38,24);} //Volant Egg
+        else if (Pet.species==1)   {_pwrs = A.powers(26000,45,19,10);} //Quaped Egg
+        else   /*Pet.species==0*/  {_pwrs = A.powers(24000,18,18,40);} //Biped Egg
         Pet.species = Pet.species + 5;
         Pet.attribute.stage = 1;
         Pet.power = _pwrs;
@@ -213,7 +194,7 @@ library core {
                                     ); 
     }
 
-    function FeedPet(uint _deRand, A.Pets memory _Pet, uint8 _foodtype,address _ownerof) 
+    function FeedPet(A.Pets memory _Pet, uint8 _foodtype,address _ownerof) 
     external view returns(A.Pets memory Pet) { //Foodtype 0 to 5
         Pet = _Pet;
         require (Pet.species >4  //not an egg
@@ -224,7 +205,7 @@ library core {
         uint32 _weight;
         uint8 _happy;
         if (Pet.time.endurance<_timenow) { //if Pet die of hunger but still has life time
-            Pet.time.endurance = _timenow; //revive from hunger
+            Pet.time.endurance = _timenow; //revive from hunger then..
         }
         uint64 _enduranceleft = Pet.time.endurance-_timenow;
         if (Pet.time.deadtime >= _timenow && Pet.time.endurance >= _timenow) { //Alive & Active
@@ -247,12 +228,12 @@ library core {
                 Pet.attribute.happiness = add8b(Pet.attribute.happiness,_happy);
                 //Pet.exp = Pet.exp + uint32(10*(_full));
             }
-            Pet.exp = Pet.exp + 10*uint32((Pet.time.endurance-_timenow-_enduranceleft));
+            Pet.exp = Pet.exp + 89*uint32((Pet.time.endurance-_timenow-_enduranceleft));
         } 
-        Pet = EVO.checkEvolve(_deRand,Pet);
+        Pet = EVO.checkEvolve(Pet);
     }
 
-    function trainPet(uint _deRand, A.Pets memory _Pet, uint8 _traintype,address _ownerof) 
+    function trainPet(A.Pets memory _Pet, uint8 _traintype,address _ownerof) 
         external view returns(A.Pets memory Pet) { //TrainType 0 to 7
         Pet = _Pet;
         require (Pet.species >4  //not an egg
@@ -263,7 +244,6 @@ library core {
         if (Pet.time.deadtime > _timenow && Pet.time.endurance > _timenow //Pet still alive
             && Pet.status == 0) { //Alive & Active
             uint64 _stamina = sub64b(_timenow,Pet.time.stamina);
-            uint32 _level = _returnLevel(_Pet.exp);
             uint64 _tiredness;
             uint32 _weightloss;
             uint8 _happy;
@@ -272,48 +252,48 @@ library core {
             A.powers memory _pwrstemp;
             //Choose Your training routing :p
             if      (_traintype==13){_tiredness = 2 minutes; _weightloss = 600; _happy = 1; _discipline = 3; //reduce HAP, gain DIS
-                 _pwrstemp.hitpoints=2000; _pwrstemp.intellegence=10;}//Exercises
+                 _pwrstemp.hitpoints=4000; _pwrstemp.intellegence=30;}//Exercises
             else if (_traintype==12){_tiredness = 2 minutes; _weightloss = 2100; _happy = 1; _discipline = 3; //reduce HAP, gain DIS
-                  _pwrstemp.strength=1; _pwrstemp.agility=11;}//Exercises
+                  _pwrstemp.strength=4; _pwrstemp.agility=30;}//Exercises
             else if (_traintype==11){_tiredness = 2 minutes; _weightloss = 1520; _happy = 1; _discipline = 3; //reduce HAP, gain DIS
-                 _pwrstemp.strength=11; _pwrstemp.agility=1; _pwrstemp.intellegence=1;}//Exercises
+                 _pwrstemp.strength=30; _pwrstemp.agility=2; _pwrstemp.intellegence=2;}//Exercises
             else if (_traintype==10){_tiredness = 2 minutes; _weightloss = 1920; _happy = 1; _discipline = 3; //reduce HAP, gain DIS
-                 _pwrstemp.hitpoints=11000; _pwrstemp.strength=1; _pwrstemp.intellegence=1;}//Exercises
+                 _pwrstemp.hitpoints=30000; _pwrstemp.strength=2; _pwrstemp.intellegence=2;}//Exercises
             else if (_traintype==9){_tiredness = 0 minutes; _weightloss = 0; _happy = 0; _discipline = 0; //nothing
                     }
             else if (_traintype==8){_tiredness = 0 minutes; _weightloss = 0; _happy = 0; _discipline = 0; //nothing
                     }
             else if (_traintype==7){_tiredness = 25 minutes; _weightloss = 6251; _happy = 12; _discipline = 26; //reduce HAP, gain DIS
-                 _pwrstemp.hitpoints=36000; _pwrstemp.intellegence=109;}//Courses
+                 _pwrstemp.hitpoints=145000; _pwrstemp.intellegence=280;}//Courses
             else if (_traintype==6){_tiredness = 25 minutes; _weightloss = 23814; _happy = 12; _discipline = 25; //reduce HAP, gain DIS
-                  _pwrstemp.strength=36; _pwrstemp.agility=110;}//Running Machine
+                  _pwrstemp.strength=100; _pwrstemp.agility=325;}//Running Machine
             else if (_traintype==5){_tiredness = 25 minutes; _weightloss = 17320; _happy = 12; _discipline = 25; //reduce HAP, gain DIS
-                 _pwrstemp.strength=105; _pwrstemp.agility=18; _pwrstemp.intellegence=22;}//Wooden Dummy
+                 _pwrstemp.strength=305; _pwrstemp.agility=55; _pwrstemp.intellegence=65;}//Wooden Dummy
             else if (_traintype==4){_tiredness = 25 minutes; _weightloss = 11753; _happy = 13; _discipline = 25; //reduce HAP, gain DIS
-                  _pwrstemp.hitpoints=107520; _pwrstemp.strength=25; _pwrstemp.intellegence=15;}//sit under waterfall
+                  _pwrstemp.hitpoints=305000; _pwrstemp.strength=65; _pwrstemp.intellegence=55;}//sit under waterfall
             else if (_traintype==3){_tiredness = 8 minutes; _weightloss = 2000; _happy = 2; _discipline = 10; //reduce HAP, gain DIS
-                 _pwrstemp.hitpoints=6800; _pwrstemp.intellegence=40;}//black board
+                 _pwrstemp.hitpoints=36000; _pwrstemp.intellegence=100;}//black board
             else if (_traintype==2){_tiredness = 8 minutes; _weightloss = 7200; _happy = 2; _discipline = 9; //reduce HAP, gain DIS
-                  _pwrstemp.strength=4; _pwrstemp.agility=42;}//Sprint
+                  _pwrstemp.strength=26; _pwrstemp.agility=110;}//Sprint
             else if (_traintype==1){_tiredness = 8 minutes; _weightloss = 5420; _happy = 2; _discipline = 9; //reduce HAP, gain DIS
-                 _pwrstemp.strength=45; _pwrstemp.agility=1; _pwrstemp.intellegence=1;}//Punching bag
+                 _pwrstemp.strength=115; _pwrstemp.agility=5; _pwrstemp.intellegence=16;}//Punching bag
             else /*if (_traintype==0)*/{_tiredness = 8 minutes; _weightloss = 7600; _happy = 3; _discipline = 9; //reduce HAP, gain DIS
-                 _pwrstemp.hitpoints=41200; _pwrstemp.strength=3; _pwrstemp.intellegence=1;}//Push bolder
+                 _pwrstemp.hitpoints=116000; _pwrstemp.strength=10; _pwrstemp.intellegence=10;}//Push bolder
             require(_stamina >= _tiredness, "too tired");
             //traits affect
             (_pwrstemp, _happy, _discipline) = traitAddStateTraining(_tiredness, Pet.trait,_pwrstemp, _happy, _discipline);
 
             //training 
-            Pet.power.hitpoints = add32B999999L(Pet.power.hitpoints,_pwrstemp.hitpoints*_level/255);
-            Pet.power.strength = add16B999L(Pet.power.strength,uint16(_pwrstemp.strength*_level/255));
-            Pet.power.agility = add16B999L(Pet.power.agility,uint16(_pwrstemp.agility*_level/255));
-            Pet.power.intellegence = add16B999L(Pet.power.intellegence,uint16(_pwrstemp.intellegence*_level/255));
+            Pet.power.hitpoints = add32B999999L(Pet.power.hitpoints,_pwrstemp.hitpoints );
+            Pet.power.strength = add16B999L(Pet.power.strength,_pwrstemp.strength );
+            Pet.power.agility = add16B999L(Pet.power.agility,_pwrstemp.agility );
+            Pet.power.intellegence = add16B999L(Pet.power.intellegence,_pwrstemp.intellegence );
             Pet.attribute.happiness = sub8b(Pet.attribute.happiness,_happy);
             Pet.attribute.discipline = add8b(Pet.attribute.discipline,_discipline);
             Pet.attribute.weight = sub32b(Pet.attribute.weight,_weightloss);
             if (Pet.attribute.weight == 0) {Pet.attribute.weight = 100;} //minimum weight
             //EXP
-            Pet.exp = Pet.exp + 32121*uint32(_tiredness/1 minutes);
+            Pet.exp = Pet.exp + 320000*uint32(_tiredness/1 minutes);
             //=======capped by FULL STAMINA=======//
             _stamina = sub64b(_stamina, _tiredness);
             if ( _stamina > (FULL_STAMINA-_tiredness)) { 
@@ -325,7 +305,7 @@ library core {
             }
             //============
         }
-        Pet = EVO.checkEvolve(_deRand<<18,Pet);
+        Pet = EVO.checkEvolve(Pet);
     }
 
     function traitAddStateTraining(uint64 _tiredness, uint8[3] memory _traits, A.powers memory _pwrstemp, uint8 _happy, uint8 _discipline) 
@@ -475,15 +455,15 @@ library core {
         ) 
         {weakness = 2;}
         // because who has less actionpoints move next
-        //while<= 253 bit
-        while (bit<=253 && _Pet1.power.hitpoints > 0 && _Pet2.power.hitpoints > 0 ){
+        //while<= 253 bit 1round 3 bit 15 rounds, means 45 bit
+        while (bit<=46 && _Pet1.power.hitpoints > 0 && _Pet2.power.hitpoints > 0 ){
             if (actionpoints1 <= actionpoints2) { //Pet1 move
                 bit++; //bit ++ first, means set '0'
                 _deRand = _deRand<<3;
                 (BattleRhythm,effort,damage)=_chooseSkill(_deRand,_Pet1,BattleRhythm,bit);
                 bit=bit+2; //2bits has set in the function above for skill.
                 actionpoints1 = actionpoints1 + effort +  _Pet2.power.agility; // purposely reverse Pet2 agi to action 1
-                if (weakness == 2) {damage = damage/100*125;}
+                if (weakness == 2) {damage = damage*2;}
                 _Pet2.power.hitpoints = sub32b(_Pet2.power.hitpoints,damage);
                 OppoDamage += damage;
             } else { //Pet2 move
@@ -493,7 +473,7 @@ library core {
                 (BattleRhythm,effort,damage)=_chooseSkill(_deRand,_Pet2,BattleRhythm,bit);
                 bit=bit+2; //2bits has set in the function above.
                 actionpoints2 = actionpoints2 + effort +  _Pet1.power.agility; // purposely reverse Pet1 agi to action 2
-                if (weakness == 1) {damage = damage/100*125;}
+                if (weakness == 1) {damage = damage*2;}
                 _Pet1.power.hitpoints = sub32b(_Pet1.power.hitpoints,damage);
             }
         }
@@ -587,6 +567,99 @@ library core {
         else if (SkillNumber == 62) {damage= 125*STR + 200*INT ; effort = 385;}
         else if (SkillNumber == 63) {damage= 125*STR + 125*AGI + 125*INT ; effort = 400;}
     }
+
+    function battlewinlosereward(A.Pets memory _Pet, bool _win, uint8 _rank) external view 
+    returns (A.Pets memory Pet){
+        Pet = _Pet;
+        uint32 _exp;
+        A.powers memory _pwrstemp;
+        uint8 _happy;
+        uint8 _discipline;
+        uint32 _weight;
+        if ( _rank >= 4 ) { //means not fight training
+            if (_win == true) { // if won
+            
+                _exp = 820000;
+                _pwrstemp.hitpoints =15000;
+                _pwrstemp.strength =15;
+                _pwrstemp.agility =15;
+                _pwrstemp.intellegence =15;
+                Pet.attribute.happiness = add8b(Pet.attribute.happiness,10);
+                _discipline =5;
+                _weight =3815;
+                
+            } else { //lose...
+                _exp = 450000;
+                _pwrstemp.hitpoints =6000;
+                _pwrstemp.strength =6;
+                _pwrstemp.agility =6;
+                _pwrstemp.intellegence =6;
+                Pet.attribute.happiness = sub8b(Pet.attribute.happiness,10);
+                _discipline =5;
+                _weight =3815;
+            }
+            (_pwrstemp, _happy, _discipline) = traitAddStateBattle(2 minutes, Pet.trait,_pwrstemp, _happy, _discipline);
+        
+            Pet.exp = add32b(Pet.exp,_exp); 
+            Pet.power.hitpoints = add32B999999L(Pet.power.hitpoints,_pwrstemp.hitpoints);
+            Pet.power.strength = add16B999L(Pet.power.strength,_pwrstemp.strength);
+            Pet.power.agility = add16B999L(Pet.power.agility,_pwrstemp.agility);
+            Pet.power.intellegence = add16B999L(Pet.power.intellegence,_pwrstemp.intellegence);
+            Pet.attribute.happiness = add8b(Pet.attribute.happiness,_happy);
+            Pet.attribute.discipline = add8b(Pet.attribute.discipline,_discipline);
+            Pet.attribute.weight = sub32b(Pet.attribute.weight,_weight);
+        }
+        Pet = EVO.checkEvolve(Pet);
+    }
+
+    function traitAddStateBattle(uint64 _tiredness, uint8[3] memory _traits, A.powers memory _pwrstemp, uint8 _happy, uint8 _discipline) 
+    private pure returns(A.powers memory pwrstemp, uint8 happy, uint8 discipline){
+        pwrstemp = _pwrstemp;
+        happy = _happy;
+        discipline = _discipline;
+        uint16 _bonushr =  uint16(_tiredness/1 minutes);
+        for (uint256 i; i < 3; i++) {
+                //training trait 1 to 4
+                if      (_traits[i] == 5) { pwrstemp.hitpoints = pwrstemp.hitpoints + 100; //Pride
+                                            pwrstemp.strength= pwrstemp.strength + 2;
+                                            pwrstemp.agility = pwrstemp.agility + 2;
+                                            pwrstemp.intellegence = pwrstemp.intellegence + 2;
+                                        } 
+                else if (_traits[i] == 6) { pwrstemp.hitpoints = pwrstemp.hitpoints + 1000; //Resilient
+                                            pwrstemp.strength= pwrstemp.strength + 1;
+                                            pwrstemp.agility = pwrstemp.agility + 1;
+                                            pwrstemp.intellegence = pwrstemp.intellegence + 1;
+                                        }  
+                else if (_traits[i] == 7) {happy = happy+(15*uint8(_bonushr))/10;} //Hardworking
+                else if (_traits[i] == 8) {discipline = discipline+(15*uint8(_bonushr))/10;} //Serious
+                
+                else if (_traits[i] == 9) {pwrstemp.intellegence = pwrstemp.intellegence +_bonushr;} //Creative
+                else if (_traits[i] == 10) {pwrstemp.strength = pwrstemp.strength +_bonushr;} //Ambitious
+                else if (_traits[i] == 11) {pwrstemp.agility = pwrstemp.agility +_bonushr;} //Multitasking
+
+                else if (_traits[i] == 12) {pwrstemp.strength = pwrstemp.strength +(3*_bonushr)/10;} //Lonely
+                else if (_traits[i] == 13) {pwrstemp.strength = pwrstemp.strength +(4*_bonushr)/10;} //Bashful
+                else if (_traits[i] == 14) {pwrstemp.strength = pwrstemp.strength +(5*_bonushr)/10;} //Adamant
+                else if (_traits[i] == 15) {pwrstemp.strength = pwrstemp.strength +(6*_bonushr)/10;} //Naughty
+                else if (_traits[i] == 16) {pwrstemp.strength = pwrstemp.strength +(7*_bonushr)/10;} //Brave
+                else if (_traits[i] == 17) {pwrstemp.agility = pwrstemp.agility +(3*_bonushr)/10;} //Timid
+                else if (_traits[i] == 18) {pwrstemp.agility = pwrstemp.agility +(4*_bonushr)/10;} //Hasty
+                else if (_traits[i] == 19) {pwrstemp.agility = pwrstemp.agility +(5*_bonushr)/10;} //Jolly
+                else if (_traits[i] == 20) {pwrstemp.agility = pwrstemp.agility +(6*_bonushr)/10;} //Naive
+                else if (_traits[i] == 21) {pwrstemp.agility = pwrstemp.agility +(7*_bonushr)/10;} //Quirky
+                else if (_traits[i] == 22) {pwrstemp.intellegence = pwrstemp.intellegence +(3*_bonushr)/10;} //Mild
+                else if (_traits[i] == 23) {pwrstemp.intellegence = pwrstemp.intellegence +(4*_bonushr)/10;} //Quiet
+                else if (_traits[i] == 24) {pwrstemp.intellegence = pwrstemp.intellegence +(5*_bonushr)/10;} //Rash
+                else if (_traits[i] == 25) {pwrstemp.intellegence = pwrstemp.intellegence +(6*_bonushr)/10;} //Modest
+                else if (_traits[i] == 26) {pwrstemp.intellegence = pwrstemp.intellegence +(7*_bonushr)/10;} //Docile
+                else if (_traits[i] == 27) {pwrstemp.hitpoints = pwrstemp.hitpoints + 300*_bonushr;} //Relaxed
+                else if (_traits[i] == 28) {pwrstemp.hitpoints = pwrstemp.hitpoints + 400*_bonushr;} //Bold
+                else if (_traits[i] == 29) {pwrstemp.hitpoints = pwrstemp.hitpoints + 500*_bonushr;} //Impish
+                else if (_traits[i] == 30) {pwrstemp.hitpoints = pwrstemp.hitpoints + 600*_bonushr;} //Lax
+                else if (_traits[i] == 31) {pwrstemp.hitpoints = pwrstemp.hitpoints + 700*_bonushr;} //Careful
+            }
+    }
+
 
 }
 
