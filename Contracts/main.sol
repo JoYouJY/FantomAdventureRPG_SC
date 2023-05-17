@@ -8,7 +8,7 @@ import "@openzeppelin/contracts@4.7.0/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts@4.7.0/access/Ownable.sol";
 import "./myPet.sol";
 import "./core.sol";
-
+import "./Metadata.sol";
 /**
  * @title IERC2981
  * @dev Interface for the ERC2981: NFT Royalty Standard extension, which extends the ERC721 standard.
@@ -61,6 +61,10 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     uint16 private constant BATTLESTAMINA = 2 minutes;
     
     uint256 private tokenIdTracker;
+
+    string public baseTokenURI; //in case metadata server/IPFS dead before FTM
+    string public imageURL; //in case image server/IPFS dead before FTM
+    string public imageExtension;
     
     //TowerLevel 0 is havent start. 1 to 20 is level one.
     // 21 to 40 is level two, and so on. to 181 to 200 for level 10. 
@@ -104,6 +108,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     */
     function mint(address _to, uint256 _count) public payable {
     // Check that the total number of Pets to mint does not exceed the maximum.
+        require(balanceOf(_to) <= 20, "MAXIMUM MINT 20 EGGS PER ADDRESS FOR NOW");
         require((tokenIdTracker + _count <= MAX_MINTABLE) && //error.exceed total MAX mintable
                 (_count <= MAX_PER_ATTEMPT) && //error.exceed multi-mint max limit
                 (msg.value >= _count * MINTPRICE)); //error.less than needed total mint cost
@@ -119,13 +124,11 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         Pet[_id] = core.HatchEgg(Pet[_id], ownerOf(_id));
     }
     function feedsPet(uint _id, uint8 _foodtype) public payable { //owner,trainer check in function
-        uint rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp)));
-        Pet[_id] = core.FeedPet(rand, Pet[_id], _foodtype,ownerOf(_id)); //requirement check on lib
+        Pet[_id] = core.FeedPet(Pet[_id], _foodtype,ownerOf(_id)); //requirement check on lib
         emit StatChangedResult(Pet[_id]);
     }
     function trainsPet(uint _id, uint8 _trainingtype) public { //owner,trainer check in function
-        uint rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp)));
-        Pet[_id] = core.trainPet(rand, Pet[_id], _trainingtype,ownerOf(_id)); //requirement check on lib
+        Pet[_id] = core.trainPet(Pet[_id], _trainingtype,ownerOf(_id)); //requirement check on lib
         emit StatChangedResult(Pet[_id]);
     }
 
@@ -141,8 +144,6 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         uint8 bit; // how many bit has been filled for Rythm
         uint64 damage; //dealt total damage to Mon2
         uint rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp)));
-        uint16 Startcount;
-
         A.Pets memory BattlingPet;
         if (_rank <= 3) { //tag along with Mon1Win to reduce stack
             BattlingPet = core.battlingPet(_rank,rand);
@@ -155,14 +156,94 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
             BattlingPet = core.battlingPet(_rank,rand);
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
-        Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank, rand); //exp stars gain   
+        Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank); //exp stars gain   
         Pet[_id].time.stamina += BATTLESTAMINA; // take up stamina
         emit Result(_id, Mon1Win, BattleRhythm, Pet[_id], BattlingPet,damage, bit); //done battle
         
     }
   
+    //----------------------- Owner function ---------------------------------
+    function withdraw(address payable _to) external { //incase someone want to donate to me? who knows. haha
+        require(_to == owner());
+        (bool sent,) = _to.call{value: address(this).balance}("");
+        require(sent);
+    }
+    function setBaseURI(string memory baseURI) public onlyOwner {
+        baseTokenURI = baseURI; //IPFS/server is less realiable than FTM IMO. The states are safe in FTM. Only URI link is upgradable.
+        //URI is just for marketplace to display.
+    }
+    function setImageURL(string memory URL) public onlyOwner {
+        imageURL = URL;//IPFS/server is less realiable, Only URI link is upgradable.
+        //URI is just for marketplace to display.
+    }
+    function setImageExtension(string memory ext) public onlyOwner {
+        imageExtension = ext; //IPFS/server is less realiable, Only URI link is upgradable.
+        //URI is just for marketplace to display.
+    }
     
+    
+    //----------------------- Free read Functions ---------------------------------------
+    function royaltyInfo(uint, uint _salePrice) external view returns (address, uint) {
+        uint royalty = 500;
+        address receiver = owner();
+        return (receiver, (_salePrice * royalty) / 10000);
+    }
+    function _baseURI() internal view virtual override returns (string memory) {
+        return baseTokenURI;
+    }
+    function _imageURI() internal view returns (string memory) {
+        return imageURL;
+    }
+    function viewNFT(uint256 _tokenId) external view returns (A.Pets memory) {
+        return Pet[_tokenId];
+    }
+    function getPetsByOwner(address _owner) public view returns(uint[] memory) {
+        uint[] memory result = new uint[](balanceOf(_owner));
+        uint counter = 0;
+        for (uint i = 0; i < tokenIdTracker; i++) {
+            if (ownerOf(i) == _owner) {
+                result[counter] = i;
+                counter++;
+            }
+        }
+        return result;
+    }
+    function getPetsByOwnerByBatch (address _owner) external view returns(A.Pets[] memory) {
+        uint[] memory ids = getPetsByOwner(_owner);
+        A.Pets[] memory PetsInfo = new A.Pets[](balanceOf(_owner));
+        for (uint i = 0; i < balanceOf(_owner); i++) {
+            PetsInfo[i] = Pet[ids[i]];
+        }
+        return PetsInfo;
+    }
+    
+    function tokenURI(uint256 tokenId) public view override virtual returns (string memory) {
+        _requireMinted(tokenId);
+        //E.toString(tokenId)
+        return Meta.buildURIbased64(Pet[tokenId],imageURL, imageExtension,uint64(block.timestamp),tokenId);
+    } //I wish Marketplaces able to comply to this...
+
+//--------------------------------------
+//ONLY FOR TESTING
+    function cheatSTATS(uint _id) public {
+        Pet[_id].time.stamina = Pet[_id].time.stamina - 25 hours;
+        Pet[_id].time.deadtime = Pet[_id].time.deadtime + 24 hours;
+        Pet[_id].time.evolutiontime = uint64(block.timestamp);
+        Pet[_id].power.hitpoints = 550000;
+        Pet[_id].power.strength = 550;
+        Pet[_id].power.agility = 550;
+        Pet[_id].power.intellegence = 550;
+    }
+    function cheatKILL(uint _id) public {
+        Pet[_id].time.deadtime = Pet[_id].time.deadtime - 200 hours;
+    }
+    function cheatGOHUNGRY(uint _id) public {
+  //      Pet[_id].time.endurance = uint64(block.timestamp) +  1 hours; 
+    } 
+    function cheatRevive(uint _id) public {
+        Pet[_id].time.deadtime = Pet[_id].time.deadtime + 48 hours;
+    }
 
 
-    //----------------------- Supporting Functions ---------------------------------------
+
 }
