@@ -31,6 +31,8 @@ interface IERC2981 is IERC165 {
 contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     constructor() ERC721("FantomAdventureRPG", "FARPG") {
         setImageURL("https://ipfs.io/ipfs/QmPzePMhtYXBZQrD7fMuAMuks4tVcWyN2iGpgwX3kxBn5Y/");
+        setImageExtension(".jpg");
+    
     }
     
     
@@ -239,6 +241,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         Pet[_id].power.strength = 550;
         Pet[_id].power.agility = 550;
         Pet[_id].power.intellegence = 550;
+        Pet[_id].exp = Pet[_id].exp + 32132100;
     }
     function cheatKILL(uint _id) public {
         Pet[_id].time.deadtime = Pet[_id].time.deadtime - 200 hours;
