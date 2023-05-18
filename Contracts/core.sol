@@ -110,31 +110,19 @@ library core {
         return c;
     }
     //-----------------------------------------------------
-  
-
-    
-
-   
-    //----------------------------------------------
-
-
-     /**
+    /**
     * @dev Mint a Pet egg based on a given random number.
     * @param _deRand The random number used to generate the Pet.
     * @return Pet The newly minted Pet.
     */
     function mintEgg(uint _deRand) external pure returns (A.Pets memory Pet) {
         uint8 _randegg = uint8(_RandNumb(_deRand,99,0));
-        if (_randegg >= 95) { //5%
-            _randegg = 4;
-        } else if (_randegg >= 84) { //11%
-            _randegg = 3;
-        } else if (_randegg >= 56) { //28%
-            _randegg = 2;
-        } else if (_randegg >= 28) { //28%
-            _randegg = 1;
-        } else { //28%
+        if (_randegg >= 80) { //20%
             _randegg = 0;
+        } else if (_randegg >= 40) { //40%
+            _randegg = 2;
+        } else { //40%
+            _randegg = 3;
         }
         Pet = A.Pets(
             _randegg, // type of Pet species (egg 0 to 4)
@@ -178,10 +166,10 @@ library core {
                 , "xPetStatusVspecies"); 
         A.powers memory _pwrs;
         uint64 timenow = uint64(block.timestamp);
-        if      (Pet.species==4)   {_pwrs = A.powers(28000,26,26,26);}//Amorp Egg
+        if      (Pet.species==4)   {_pwrs = A.powers(28000,26,26,26);}//Amorp Egg //cut feature due to time limit
         else if (Pet.species==3)   {_pwrs = A.powers(47000,35,9,20);} //Mech Egg
         else if (Pet.species==2)   {_pwrs = A.powers(23000,15,38,24);} //Volant Egg
-        else if (Pet.species==1)   {_pwrs = A.powers(26000,45,19,10);} //Quaped Egg
+        else if (Pet.species==1)   {_pwrs = A.powers(26000,45,19,10);} //Quaped Egg //cut feature due to time limit
         else   /*Pet.species==0*/  {_pwrs = A.powers(24000,18,18,40);} //Biped Egg
         Pet.species = Pet.species + 5;
         Pet.attribute.stage = 1;
