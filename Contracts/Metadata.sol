@@ -8,7 +8,7 @@ library Meta {
 
     uint64 private constant FULL_STAMINA = 40 minutes; //core has record too
   
-    function buildURIbased64(A.Pets memory _Pet, string memory _imageURI, string memory _imageExt,uint64 _timenow, uint _id) 
+    function buildURIbased64(A.Pets memory _Pet, string memory _imageURI, string memory _imageExt,uint64 _timenow,bool _namebyID) 
     external pure returns (string memory metadata) {
         string memory _name;
         string memory _imagelinkfull;
@@ -22,20 +22,36 @@ library Meta {
         _attribute2 = _getAttribute2(_Pet);
         _attribute3 = _getAttribute3(_Pet);
         _attribute4 = _getAttribute4(_Pet);
-        _imagelinkfull = string(abi.encodePacked(_imageURI,_toString(_id),_imageExt));
-        metadata = string(abi.encodePacked("data:application/json;base64,",
-            Base64.encode(
-                bytes(
-                    abi.encodePacked(
-                        "{\"name\": \"",_name,
-                        "\",\"description\": \"",_description,
-                        "\",\"image\": \"",
-                        _imagelinkfull,
-                        _attribute1,_attribute2,_attribute3,_attribute4     
+        _imagelinkfull = string(abi.encodePacked(_imageURI,_toString(_Pet.species),_imageExt));
+        if (_namebyID == true) {
+             metadata = string(abi.encodePacked("data:application/json;base64,",
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked(
+                            "{\"name\": \"#",_toString(_Pet.attribute.id)," ",_name,
+                            "\",\"description\": \"",_description,
+                            "\",\"image\": \"",
+                            _imagelinkfull,
+                            _attribute1,_attribute2,_attribute3,_attribute4     
+                        )
                     )
                 )
-            )
-        ));
+            ));
+        } else {
+            metadata = string(abi.encodePacked("data:application/json;base64,",
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked(
+                            "{\"name\": \"",_name,
+                            "\",\"description\": \"",_description,
+                            "\",\"image\": \"",
+                            _imagelinkfull,
+                            _attribute1,_attribute2,_attribute3,_attribute4     
+                        )
+                    )
+                )
+            ));
+        }
     }
 
 
@@ -117,7 +133,7 @@ library Meta {
  //           "\"}, {\"trait_type\": \"Shinning\",\"value\": \"",bytes(_shinning),   //cut feature due to time line for hackathon
  //           "\"}, {
                 
- //           "\"}, {\"trait_type\": \"Life Time\",\"value\": \"",_getDayHrsMin(_lifetime),   //cut feature due to time line for hackathon
+            "\"}, {\"trait_type\": \"'Family\",\"value\": \"",_getFamily(_Pet.family),   //cut feature due to time line for hackathon
             "\"}, {\"trait_type\": \"_Endurance\",\"value\": \"",_getDayHrsMin(_endurance),
             "\"}, {\"trait_type\": \"_Stamina\",\"value\": \"",_getDayHrsMin(_stamina)
             
@@ -153,6 +169,15 @@ library Meta {
         ));
     }
 
+    function _getFamily(uint16 _family) private pure returns (bytes memory family){
+        string memory familytemp;
+        if (_family == 0) {familytemp = "Distinction"; }
+        else if (_family == 1) {familytemp = "Celestial"; }
+        else if (_family == 2) {familytemp = "Verdant"; }
+        else if (_family == 3) {familytemp = "Fantasy"; }
+        else if (_family == 4) {familytemp = "Abyss"; }
+        family = bytes(familytemp);
+    }
     function _getTraits(uint8 _trait) private pure returns (bytes memory trait){
         string memory traittemp;
         if (_trait == 0) {traittemp = "none"; }
