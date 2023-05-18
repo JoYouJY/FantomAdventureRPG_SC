@@ -116,14 +116,8 @@ library core {
     * @return Pet The newly minted Pet.
     */
     function mintEgg(uint _deRand) external pure returns (A.Pets memory Pet) {
-        uint8 _randegg = uint8(_RandNumb(_deRand,99,0));
-        if (_randegg >= 80) { //20%
-            _randegg = 0;
-        } else if (_randegg >= 40) { //40%
-            _randegg = 2;
-        } else { //40%
-            _randegg = 3;
-        }
+        uint8 _randegg = uint8(_RandNumb(_deRand,2,0));
+        //33% for each egg
         Pet = A.Pets(
             _randegg, // type of Pet species (egg 0 to 4)
             10**_randegg, // gene
