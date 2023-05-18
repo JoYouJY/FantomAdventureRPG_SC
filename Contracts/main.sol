@@ -73,6 +73,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     string public baseTokenURI; //in case metadata server/IPFS dead before FTM
     string public imageURL; //in case image server/IPFS dead before FTM
     string public imageExtension;
+    bool public namebyID = true;
     
     //TowerLevel 0 is havent start. 1 to 20 is level one.
     // 21 to 40 is level two, and so on. to 181 to 200 for level 10. 
@@ -188,8 +189,10 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         imageExtension = ext; //IPFS/server is less realiable, Only URI link is upgradable.
         //URI is just for marketplace to display.
     }
-    
-    
+    function setnamebyID(bool TF) public onlyOwner {
+        namebyID = TF; //IPFS/server is less realiable, Only URI link is upgradable.
+        //URI is just for marketplace to display.
+    }
     //----------------------- Free read Functions ---------------------------------------
     function royaltyInfo(uint, uint _salePrice) external view returns (address, uint) {
         uint royalty = 500;
@@ -228,7 +231,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     function tokenURI(uint256 tokenId) public view override virtual returns (string memory) {
         _requireMinted(tokenId);
         //E.toString(tokenId)
-        return Meta.buildURIbased64(Pet[tokenId],imageURL, imageExtension,uint64(block.timestamp),tokenId);
+        return Meta.buildURIbased64(Pet[tokenId],imageURL, imageExtension,uint64(block.timestamp),namebyID);
     } //I wish Marketplaces able to comply to this...
 
 //--------------------------------------
