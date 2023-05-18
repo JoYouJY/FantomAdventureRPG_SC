@@ -187,155 +187,155 @@ library EVO {
 //----------------  R O O K I E ----------------------------//
            function _EvolveID10RQ(uint rand, A.Pets memory _Pet) private view //Wiggle
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<1,4,0) < 3 && //60% chance to evolve to this
-            _Pet.attribute.weight<1600   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<1,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.attribute.weight<1600   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 10; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
             //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,25000);
-            _Pet.power.strength = add16B999L(_Pet.power.strength,25);
-            _Pet.power.agility = add16B999L(_Pet.power.agility,110);
-            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,35);
-            _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainRookie);
-            _Pet.time.evolutiontime = add64b(uint64(block.timestamp),RookietoMatureTime);
-            _Pet.attribute.stage = 2; 
-            _Pet.trait[0] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
-            _Pet.skill[0] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
-        return (_Pet,MeetRQ);
-    }
-      
-      function _EvolveID16RQ(uint rand, A.Pets memory _Pet) private view //Wingoid
-                                returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<13,4,0) < 3 && //60% chance to evolve to this
-            _Pet.attribute.weight<2500   ) { //check meet evolve condition?
-            MeetRQ = true;
-            _Pet.species = 16; //set to new species
-            //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
-            //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
-            //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,30000);
-            _Pet.power.strength = add16B999L(_Pet.power.strength,40);
-            _Pet.power.agility = add16B999L(_Pet.power.agility,77);
-            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,56);
-            _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainRookie);
-            _Pet.time.evolutiontime = add64b(uint64(block.timestamp),RookietoMatureTime);
-            _Pet.attribute.stage = 2; 
-            _Pet.trait[0] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
-            _Pet.skill[0] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
-        return (_Pet,MeetRQ);
-    }
-      function _EvolveID17RQ(uint rand, A.Pets memory _Pet) private view //IO-der
-                                returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<15,4,0) < 3 && //60% chance to evolve to this
-            _Pet.attribute.discipline>=150   ) { //check meet evolve condition?
-            MeetRQ = true;
-            _Pet.species = 17; //set to new species
-            //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
-            //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
-            //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,70000);
-            _Pet.power.strength = add16B999L(_Pet.power.strength,50);
-            _Pet.power.agility = add16B999L(_Pet.power.agility,40);
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,60000);
+            _Pet.power.strength = add16B999L(_Pet.power.strength,55);
+            _Pet.power.agility = add16B999L(_Pet.power.agility,235);
             _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,50);
             _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainRookie);
             _Pet.time.evolutiontime = add64b(uint64(block.timestamp),RookietoMatureTime);
             _Pet.attribute.stage = 2; 
             _Pet.trait[0] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[0] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
+        return (_Pet,MeetRQ);
+    }
+      
+      function _EvolveID16RQ(uint rand, A.Pets memory _Pet) private view //Wingoid
+                                returns (A.Pets memory, bool MeetRQ){
+        //if (_RandNumb(rand<<13,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.attribute.weight<2500   ) { //check meet evolve condition?
+         //   MeetRQ = true;
+            _Pet.species = 16; //set to new species
+            //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
+            //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
+            //----evolve bonus
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,60000);
+            _Pet.power.strength = add16B999L(_Pet.power.strength,80);
+            _Pet.power.agility = add16B999L(_Pet.power.agility,144);
+            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,112);
+            _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainRookie);
+            _Pet.time.evolutiontime = add64b(uint64(block.timestamp),RookietoMatureTime);
+            _Pet.attribute.stage = 2; 
+            _Pet.trait[0] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
+            _Pet.skill[0] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
+        return (_Pet,MeetRQ);
+    }
+      function _EvolveID17RQ(uint rand, A.Pets memory _Pet) private view //IO-der
+                                returns (A.Pets memory, bool MeetRQ){
+        //if (_RandNumb(rand<<15,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.attribute.discipline>=150   ) { //check meet evolve condition?
+         //   MeetRQ = true;
+            _Pet.species = 17; //set to new species
+            //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
+            //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
+            //----evolve bonus
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,140000);
+            _Pet.power.strength = add16B999L(_Pet.power.strength,100);
+            _Pet.power.agility = add16B999L(_Pet.power.agility,80);
+            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,100);
+            _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainRookie);
+            _Pet.time.evolutiontime = add64b(uint64(block.timestamp),RookietoMatureTime);
+            _Pet.attribute.stage = 2; 
+            _Pet.trait[0] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
+            _Pet.skill[0] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
       function _EvolveID23RQ(uint rand, A.Pets memory _Pet) private view //Steelhead
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<27,4,0) < 3 && //60% chance to evolve to this
-            _Pet.power.agility>=180 &&
-            _Pet.attribute.happiness<=100   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<27,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.power.agility>=180 &&
+     //       _Pet.attribute.happiness<=100   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 23; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
             //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,100000);
-            _Pet.power.strength = add16B999L(_Pet.power.strength,80);
-            _Pet.power.agility = add16B999L(_Pet.power.agility,120);
-            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,55);
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,180000);
+            _Pet.power.strength = add16B999L(_Pet.power.strength,120);
+            _Pet.power.agility = add16B999L(_Pet.power.agility,220);
+            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,800);
             _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainMature);
             _Pet.time.evolutiontime = add64b(uint64(block.timestamp),MaturetoPerfectTime);
             _Pet.attribute.stage = 3; 
             _Pet.trait[1] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[1] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
       function _EvolveID30RQ(uint rand, A.Pets memory _Pet) private view //Birdori
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<41,4,0) < 3 && //60% chance to evolve to this
-            _Pet.power.agility>=180 &&
-            _Pet.attribute.happiness>120 &&
-            _Pet.attribute.weight<7000   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<41,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.power.agility>=180 &&
+     //       _Pet.attribute.happiness>120 &&
+    //        _Pet.attribute.weight<7000   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 30; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
             //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,95000);
-            _Pet.power.strength = add16B999L(_Pet.power.strength,110);
-            _Pet.power.agility = add16B999L(_Pet.power.agility,120);
-            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,70);
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,180000);
+            _Pet.power.strength = add16B999L(_Pet.power.strength,200);
+            _Pet.power.agility = add16B999L(_Pet.power.agility,200);
+            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,120);
             _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainMature);
             _Pet.time.evolutiontime = add64b(uint64(block.timestamp),MaturetoPerfectTime);
             _Pet.attribute.stage = 3; 
             _Pet.trait[1] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[1] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
       function _EvolveID37RQ(uint rand, A.Pets memory _Pet) private view //Ointank
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<55,4,0) < 3 && //60% chance to evolve to this
-            _Pet.power.hitpoints>=180000   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<55,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.power.hitpoints>=180000   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 37; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
             //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,190000);
-            _Pet.power.strength = add16B999L(_Pet.power.strength,110);
-            _Pet.power.agility = add16B999L(_Pet.power.agility,77);
-            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,44);
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,300000);
+            _Pet.power.strength = add16B999L(_Pet.power.strength,150);
+            _Pet.power.agility = add16B999L(_Pet.power.agility,107);
+            _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,124);
             _Pet.time.deadtime = add64b(_Pet.time.deadtime,lifeGainMature);
             _Pet.time.evolutiontime = add64b(uint64(block.timestamp),MaturetoPerfectTime);
             _Pet.attribute.stage = 3; 
             _Pet.trait[1] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[1] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
       function _EvolveID44RQ(uint rand, A.Pets memory _Pet) private view //Solanake
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<69,4,0) < 3 && //60% chance to evolve to this
-            _Pet.power.hitpoints>300000 &&
-            _Pet.power.agility>400 &&
-            _Pet.power.intellegence>200 &&
-            _Pet.attribute.discipline<50 &&
-            _Pet.attribute.weight>60000   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<69,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.power.hitpoints>300000 &&
+    //        _Pet.power.agility>400 &&
+     //       _Pet.power.intellegence>200 &&
+     //       _Pet.attribute.discipline<50 &&
+     //       _Pet.attribute.weight>60000   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 44; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
@@ -349,19 +349,19 @@ library EVO {
             _Pet.attribute.stage = 4; 
             _Pet.trait[2] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[2] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
       function _EvolveID54RQ(uint rand, A.Pets memory _Pet) private view //Mechindragon
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<89,4,0) < 3 && //60% chance to evolve to this
-            _Pet.power.hitpoints>500000 &&
-            _Pet.power.strength>400 &&
-            _returnLevel(_Pet.exp)>40 &&
-            _Pet.attribute.weight>140000   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<89,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.power.hitpoints>500000 &&
+     //       _Pet.power.strength>400 &&
+     //       _returnLevel(_Pet.exp)>40 &&
+     //       _Pet.attribute.weight>140000   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 54; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
@@ -375,25 +375,25 @@ library EVO {
             _Pet.attribute.stage = 4; 
             _Pet.trait[2] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[2] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
       function _EvolveID57RQ(uint rand, A.Pets memory _Pet) private view //Feroth
                                 returns (A.Pets memory, bool MeetRQ){
-        if (_RandNumb(rand<<95,4,0) < 3 && //60% chance to evolve to this
-            _Pet.power.hitpoints>400000 &&
-            _Pet.power.strength>300 &&
-            _Pet.power.intellegence>350 &&
-            _returnLevel(_Pet.exp)>23 &&
-            _Pet.attribute.happiness<50   ) { //check meet evolve condition?
-            MeetRQ = true;
+        //if (_RandNumb(rand<<95,4,0) < 3 && //60% chance to evolve to this
+          //  _Pet.power.hitpoints>400000 &&
+     //       _Pet.power.strength>300 &&
+      //      _Pet.power.intellegence>350 &&
+      //      _returnLevel(_Pet.exp)>23 &&
+      //      _Pet.attribute.happiness<50   ) { //check meet evolve condition?
+         //   MeetRQ = true;
             _Pet.species = 57; //set to new species
             //uint8 geneSynapse = add9L(_getGene(_Pet.gene,_Pet.species),1); //increase the geneSynapse based on new species
             //_Pet.gene = _setGene(_Pet.gene,_Pet.species+1,geneSynapse); //order always +1 from Species(start with 0), set it    
             //----evolve bonus
-            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,170000);
+            _Pet.power.hitpoints = add32b(_Pet.power.hitpoints,190000);
             _Pet.power.strength = add16B999L(_Pet.power.strength,233);
             _Pet.power.agility = add16B999L(_Pet.power.agility,166);
             _Pet.power.intellegence = add16B999L(_Pet.power.intellegence,233);
@@ -402,9 +402,9 @@ library EVO {
             _Pet.attribute.stage = 4; 
             _Pet.trait[2] = uint8(_RandNumb(rand<<6,31,1));      //evolve gain 1 random trait
             _Pet.skill[2] = _Pet.species;      //evolve gain 1 skill/////////////////////////<----- which is its own ID example 10
-        } else { //evolve fail
-            MeetRQ = false;
-        }
+        //} else { //evolve fail
+         //   MeetRQ = false;
+ //       }
         return (_Pet,MeetRQ);
     }
   
