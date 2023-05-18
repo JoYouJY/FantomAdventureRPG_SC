@@ -6,7 +6,7 @@ import "./myPet.sol";
 import "./base64.sol";
 library Meta {
 
-    uint64 private constant FULL_STAMINA = 1.5 days;
+    uint64 private constant FULL_STAMINA = 40 minutes; //core has record too
   
     function buildURIbased64(A.Pets memory _Pet, string memory _imageURI, string memory _imageExt,uint64 _timenow, uint _id) 
     external pure returns (string memory metadata) {
@@ -61,6 +61,22 @@ library Meta {
         }
         return bstr;
     }
+    function sqrt32b(uint32 y) private pure returns (uint32 z) {
+        if (y > 3) {
+            z = y;
+            uint32 x = y / 2 + 1;
+            while (x < z) {
+                z = x;
+                x = (y / x + x) / 2;
+            }
+        } else if (y != 0) {
+            z = 1;
+        }
+    }
+    function _returnLevel(uint32 _exp) private pure returns (uint32 _level){
+        _level= sqrt32b(_exp)/258 + 1; //min level 1 - max level 255
+        
+    }
 
     function _getAttribute1(A.Pets memory _Pet, uint64 _timenow) private pure returns (string memory attribute){
         
@@ -96,42 +112,42 @@ library Meta {
                     
                 }
         attribute = string(abi.encodePacked(
-            "\",   \"attributes\": [{\"trait_type\": \"a.Stage\",\"value\": \"",bytes(_stage),
+            "\",   \"attributes\": [{\"trait_type\": \"'Stage\",\"value\": \"",bytes(_stage),
  //               \"trait_type\": \"Status\",\"value\": \"",bytes(_status),   //cut feature due to time line for hackathon
  //           "\"}, {\"trait_type\": \"Shinning\",\"value\": \"",bytes(_shinning),   //cut feature due to time line for hackathon
  //           "\"}, {
                 
  //           "\"}, {\"trait_type\": \"Life Time\",\"value\": \"",_getDayHrsMin(_lifetime),   //cut feature due to time line for hackathon
-            "\"}, {\"trait_type\": \"b.Endurance\",\"value\": \"",_getDayHrsMin(_endurance),
-            "\"}, {\"trait_type\": \"c.Stamina\",\"value\": \"",_getDayHrsMin(_stamina)
+            "\"}, {\"trait_type\": \"_Endurance\",\"value\": \"",_getDayHrsMin(_endurance),
+            "\"}, {\"trait_type\": \"_Stamina\",\"value\": \"",_getDayHrsMin(_stamina)
             
         ));
     } //divided into function2 as stack too deep.
      function _getAttribute2(A.Pets memory _Pet) private pure returns (string memory attribute){
         attribute = string(abi.encodePacked(
-            "\"}, {\"trait_type\": \"d.EXP\",\"value\": \"",_toString(_Pet.exp),
-            "\"}, {\"trait_type\": \"e.HP\",\"value\": \"",_toString(_Pet.power.hitpoints),
-            "\"}, {\"trait_type\": \"f.STR\",\"value\": \"",_toString(_Pet.power.strength),
-            "\"}, {\"trait_type\": \"g.AGI\",\"value\": \"",_toString(_Pet.power.agility),
-            "\"}, {\"trait_type\": \"h.INT\",\"value\": \"",_toString(_Pet.power.intellegence),     
-            "\"}, {\"trait_type\": \"i.Happiness\",\"value\": \"",_toString(_Pet.attribute.happiness)
+            "\"}, {\"trait_type\": \":::Level\",\"value\": \"",_toString(_returnLevel(_Pet.exp)),
+            "\"}, {\"trait_type\": \"::HP\",\"value\": \"",_toString(_Pet.power.hitpoints),
+            "\"}, {\"trait_type\": \"::STR\",\"value\": \"",_toString(_Pet.power.strength),
+            "\"}, {\"trait_type\": \":AGI\",\"value\": \"",_toString(_Pet.power.agility),
+            "\"}, {\"trait_type\": \":INT\",\"value\": \"",_toString(_Pet.power.intellegence),     
+            "\"}, {\"trait_type\": \"Happiness\",\"value\": \"",_toString(_Pet.attribute.happiness)
             
         ));
     }//divided into function3 as stack too deep.
     function _getAttribute3(A.Pets memory _Pet) private pure returns (string memory attribute){      
         attribute = string(abi.encodePacked(       
-            "\"}, {\"trait_type\": \"j.Discipline\",\"value\": \"",_toString(_Pet.attribute.discipline),
-            "\"}, {\"trait_type\": \"k.Weight(g)\",\"value\": \"",_toString(_Pet.attribute.weight),          
-            "\"}, {\"trait_type\": \"l.Trait1\",\"value\": \"",_getTraits(_Pet.trait[0]),
-            "\"}, {\"trait_type\": \"m.Trait2\",\"value\": \"",_getTraits(_Pet.trait[1]),
-            "\"}, {\"trait_type\": \"n.Trait3\",\"value\": \"",_getTraits(_Pet.trait[2])
+            "\"}, {\"trait_type\": \"Discipline\",\"value\": \"",_toString(_Pet.attribute.discipline),
+            "\"}, {\"trait_type\": \"Weight(g)\",\"value\": \"",_toString(_Pet.attribute.weight),          
+            "\"}, {\"trait_type\": \"_Trait1\",\"value\": \"",_getTraits(_Pet.trait[0]),
+            "\"}, {\"trait_type\": \"_Trait2\",\"value\": \"",_getTraits(_Pet.trait[1]),
+            "\"}, {\"trait_type\": \"_Trait3\",\"value\": \"",_getTraits(_Pet.trait[2])
         ));
     }//divided into function4 as stack too deep.
     function _getAttribute4(A.Pets memory _Pet) private pure returns (string memory attribute){      
         attribute = string(abi.encodePacked(                 
-            "\"}, {\"trait_type\": \"o.Skill1\",\"value\": \"",_getSkills(_Pet.skill[0]),
-            "\"}, {\"trait_type\": \"p.Skill2\",\"value\": \"",_getSkills(_Pet.skill[1]),
-            "\"}, {\"trait_type\": \"q.Skill3\",\"value\": \"",_getSkills(_Pet.skill[2]),
+            "\"}, {\"trait_type\": \"_Skill1\",\"value\": \"",_getSkills(_Pet.skill[0]),
+            "\"}, {\"trait_type\": \"_Skill2\",\"value\": \"",_getSkills(_Pet.skill[1]),
+            "\"}, {\"trait_type\": \"_Skill3\",\"value\": \"",_getSkills(_Pet.skill[2]),
 //            "\"}, {\"trait_type\": \"Genetic\",\"value\": \"",_toString(_Pet.gene),  //cut feature due to time line for hackathon
             "\"}]}" 
         ));
