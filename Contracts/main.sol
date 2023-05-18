@@ -30,7 +30,7 @@ interface IERC2981 is IERC165 {
 
 contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     constructor() ERC721("FantomAdventureRPG", "FARPG") {
-        setImageURL("https://drive.google.com/file/d/");
+        setImageURL("https://ipfs.io/ipfs/QmPzePMhtYXBZQrD7fMuAMuks4tVcWyN2iGpgwX3kxBn5Y/");
     }
     
     
@@ -71,72 +71,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     string public baseTokenURI; //in case metadata server/IPFS dead before FTM
     string public imageURL; //in case image server/IPFS dead before FTM
     string public imageExtension;
-    string[64] public imageUniquecode = [
-        "11dlCP_b6BmnOwo0Ko5OwJdCgmZ00CBRf",
-        "",
-        "190tUBlUVVOtlj1Pj-P4Qxb4qr-1yEdyB",
-        "1IVwNsIFo-4rNFc574zwNgnLIlDZMg-bU",
-        "",
-        "1JIfap3fPiqoymfn48iCgDXP7xtlQsmjx",
-        "",
-        "1Q1R4Aaf7W9E74W5lSGlWK_td-U4320Qz",
-        "1Vp2i8ZZX0aLKFf29K8BOdtHqqs_Qttj3",
-        "",
-        "1XFzNfzul7c6LeN2hHaoJm-ic7vlrfP-h",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "1YqVBG6k5SyJMTSam8twacZr-s_msq-0a",
-        "1kcFeMIwAlM8mHcKtTlmkguoKDMIqwKpY",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "1lk0d8iUSusVLgaEvAlEDT995TeFYhFga",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "1nXHzzL--4of15c8ZN9kyGjQVHuuQxEPF",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "1o5Ql-E72QWO4tATeGWdUK7-MtKJ2q1NN",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "1oWdGqZKnmPsOJlvr8VgfwUH1CZzebnoX",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "1wGkT9P3Ckxs4ajihD4aXBxHLP1w20dX4",
-        "",
-        "",
-        "1z1hoqk_9L4jQ1uLNB9UGV2aW4kfhOB8m",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-    ];
+    
     //TowerLevel 0 is havent start. 1 to 20 is level one.
     // 21 to 40 is level two, and so on. to 181 to 200 for level 10. 
     mapping (address => uint8) public TowerLevel; 
@@ -251,10 +186,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         imageExtension = ext; //IPFS/server is less realiable, Only URI link is upgradable.
         //URI is just for marketplace to display.
     }
-    function setImageUniqueCode(string memory uniquecode, uint index) public onlyOwner {
-        imageUniquecode[index] = uniquecode; //IPFS/server is less realiable, Only URI link is upgradable.
-        //URI is just for marketplace to display.
-    }
+    
     
     //----------------------- Free read Functions ---------------------------------------
     function royaltyInfo(uint, uint _salePrice) external view returns (address, uint) {
@@ -294,7 +226,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     function tokenURI(uint256 tokenId) public view override virtual returns (string memory) {
         _requireMinted(tokenId);
         //E.toString(tokenId)
-        return Meta.buildURIbased64(Pet[tokenId],imageURL, imageUniquecode[tokenId],uint64(block.timestamp));
+        return Meta.buildURIbased64(Pet[tokenId],imageURL, imageExtension,uint64(block.timestamp),tokenId);
     } //I wish Marketplaces able to comply to this...
 
 //--------------------------------------
