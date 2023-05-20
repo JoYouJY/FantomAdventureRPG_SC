@@ -22,15 +22,37 @@ interface IERC2981 is IERC165 {
         returns (address receiver, uint256 royaltyAmount);
 } 
 
+contract FARPGartifacts is IERC2981, ERC1155, Ownable {
 
-
-contract FARPGartifacts is IERC2981, ERC1155 {
+    constructor() ERC1155("") {
+     
+    }
+     
     string public name = "FantomAdventureRPG Artifact";
     string public symbol = "aFARPG";
+    uint16 private constant MAX_MINTABLE = 9999;
+    // A struct to hold the Artifact's effects, keep it simple as it needed by master contract
+    struct ArtifactsEffects {
+        uint16 id;         // The unique ID of the Pet, used to track the same token
+        uint32 A;   // HP +
+        uint32 B;  // STR +
+        uint32 C;   // AGI +
+        uint32 D;   // INT +
+        uint16 R; // rarity 0 = gold, 1 = common, 2 = rare, 3 = mystical
+    }
+    struct ArtifactsMetadata {
+        string name;   // The name of the artifact
+        string description;   // The unique ID of the Pet, used to track the same token
+        string ipfs;   // should be ipfs folder, e.g. SDF4DW12ER123EFASFG234/ , remember the '/' at the end
+        uint32 timestamp; //release date/item discovered
+    }
+    string public constant baseUri = "ipfs://";
+    string public imageExtension = ".jpg";
+    ArtifactsEffects[MAX_MINTABLE] public ArEf;
+    ArtifactsMetadata[MAX_MINTABLE] public ArMe;
 
     uint public royalty; // base 10000, 750 royalty means 7.5%
     address public royaltyRecipient;
-
 
     function royaltyInfo(uint256, uint256 _salePrice)
         external
@@ -54,13 +76,12 @@ contract FARPGartifacts is IERC2981, ERC1155 {
         royaltyRecipient = _royaltyRecipient;
     }
 
-    event Initialized(string name);
+   
     event MaxMintsReached();
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event UpdateName(string name);
     event Ignore(bool ignore);
 
-    string public constant baseUri = "ipfs://";
+    
     using Counters for Counters.Counter;
     Counters.Counter public tokenIds;
     using Strings for uint256;
@@ -68,20 +89,16 @@ contract FARPGartifacts is IERC2981, ERC1155 {
     // Master contract, that can reward players from this reward.
     address internal mastercontract;
     // The fee for minting
-    uint public mintFee;
-    // The destination adddress
-    address public devAddr;
-    // The owner of the contract
-    address public owner;
+    uint public MINTFEE;
+    
     // Maximum number of individual nft tokenIds that can be created
     uint128 public maxMints;
     mapping(uint256 => string) internal tokenURIs;
     
 
-    constructor() ERC1155("") {}
+    
 
     function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-        require(_exists(_tokenId));
 
         // If there is no base URI, return the token URI.
         if (bytes(baseUri).length == 0) {
@@ -89,7 +106,7 @@ contract FARPGartifacts is IERC2981, ERC1155 {
         }
         // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
         if (bytes(tokenURIs[_tokenId]).length > 0) {
-        return string(abi.encodePacked(baseUri, tokenURIs[_tokenId]));
+        return string(abi.encodePacked(baseUri, _tokenId, imageExtension));
         }
 
         return super.uri(_tokenId);
@@ -98,17 +115,20 @@ contract FARPGartifacts is IERC2981, ERC1155 {
     function batchMint(
         address _to,
         uint256[] memory _amounts,
-        string[] memory _uris
+        ArtifactsEffects[] memory _effects,
+        ArtifactsMetadata[] memory _metadata
     ) external payable onlyOwner {
-        require(_amounts.length == _uris.length);
-        require(msg.value == mintFee * _amounts.length, "Not enough ftm");
+        require((_amounts.length == _effects.length) && _amounts.length == _metadata.length); //make sure the array size are matched
+        require(msg.value == MINTFEE * _amounts.length, "Not enough ftm");
 
         uint[] memory ids = new uint[](_amounts.length);
         for (uint i = 0; i < _amounts.length; ++i) {
-        tokenIds.increment();
-        uint256 id = tokenIds.current();
-        ids[i] = id;
-        tokenURIs[id] = _uris[i];
+            tokenIds.increment();
+            uint256 id = tokenIds.current();
+            ids[i] = id;
+            ArEf[id] = _effects[id];
+            ArMe[id] = _metadata[id]; //date of release cannot be editted. that is the uniqueness and value of NFT
+            ArMe[id].timestamp = uint32(block.timestamp);
         }
 
         require(tokenIds.current() <= maxMints);
@@ -118,32 +138,28 @@ contract FARPGartifacts is IERC2981, ERC1155 {
 
         _mintBatch(_to, ids, _amounts, "");
 
-        // Send FTM fee to fee recipient
-        (bool success, ) = devAddr.call{value: msg.value}("");
-        require(success, "Transfer failed");
+ 
     }
 
     // The uri must be in the form of ipfs:// where the ipfs:// prefix has been stripped
     function mint(
         address _to,
-        uint _amount,
-        string memory _uri
+        uint _amount, //want to fix an amount, gold?100m artifact?10k
+        ArtifactsEffects memory _effects,
+        ArtifactsMetadata memory _metadata
     ) external payable onlyOwner {
-        require(msg.value == mintFee, "Not enough ftm");
-
+        require(msg.value == MINTFEE, "Not enough ftm");
         tokenIds.increment();
         uint256 id = tokenIds.current();
-        _mint(_to, id, _amount, "");
-        tokenURIs[id] = _uri;
-
+        _mint(_to, id, _amount, ""); //give ownership to ID
+        ArEf[id] = _effects;
+        ArMe[id] = _metadata; //date of release cannot be editted. that is the uniqueness and value of NFT
+        ArMe[id].timestamp = uint32(block.timestamp);
         require(tokenIds.current() <= maxMints);
         if (tokenIds.current() == maxMints) {
         emit MaxMintsReached();
         }
 
-        // Send FTM fee to recipient
-        (bool success, ) = devAddr.call{value: msg.value}("");
-        require(success, "Transfer failed");
     }
 
     // Anyone can burn their NFT if they have sufficient balance
@@ -172,39 +188,19 @@ contract FARPGartifacts is IERC2981, ERC1155 {
         return ERC1155.isApprovedForAll(_owner, _operator);
     }
 
-    function _exists(uint256 tokenId) private view returns (bool) {
-        return bytes(tokenURIs[tokenId]).length != 0;
+    function withdraw(address payable _to) external { //incase someone want to donate to me? who knows. haha
+        require(_to == owner());
+        (bool sent,) = _to.call{value: address(this).balance}("");
+        require(sent);
     }
 
-    /**
-    * @dev Throws if called by any account other than the owner.
-    */
-    modifier onlyOwner() {
-        require(owner == msg.sender, "Ownable: caller is not the owner");
-        _;
-    }
+    //_balances
 
-    /**
-    * @dev Leaves the contract without owner. It will not be possible to call
-    * `onlyOwner` functions anymore. Can only be called by the current owner.
-    *
-    * NOTE: Renouncing ownership will leave the contract without an owner,
-    * thereby removing any functionality that is only available to the owner.
-    */
-    function renounceOwnership() public virtual onlyOwner {
-        emit OwnershipTransferred(owner, address(0));
-        owner = address(0);
-    }
 
-    /**
-    * @dev Transfers ownership of the contract to a new account (`newOwner`).
-    * Can only be called by the current owner.
-    */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
+
+
+
+
 }
 
 
