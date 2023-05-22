@@ -38,18 +38,22 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         uint32 B;  // STR +
         uint32 C;   // AGI +
         uint32 D;   // INT +
-        uint16 R; // rarity 0 = gold, 1 = common, 2 = rare, 3 = mystical
+        uint8 R; // rarity 0 = gold, 1 = common, 2 = rare, 3 = mystical
+        uint8 set; // if there is set artifact, this will indicate whether they are same set for extra effect
     }
     struct ArtifactsMetadata {
         string name;   // The name of the artifact
         string description;   // The unique ID of the Pet, used to track the same token
         string ipfs;   // should be ipfs folder, e.g. SDF4DW12ER123EFASFG234/ , remember the '/' at the end
+        uint8 slot; //this artifact is meant to wear for head/body/etc
         uint32 timestamp; //release date/item discovered
     }
     string public constant baseUri = "ipfs://";
     string public imageExtension = ".jpg";
     ArtifactsEffects[MAX_MINTABLE] public ArEf;
     ArtifactsMetadata[MAX_MINTABLE] public ArMe;
+
+    mapping (address => uint[]) public PlayerEquiped;
 
     uint public royalty; // base 10000, 750 royalty means 7.5%
     address public royaltyRecipient;
@@ -89,10 +93,10 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     // Master contract, that can reward players from this reward.
     address internal mastercontract;
     // The fee for minting
-    uint public MINTFEE;
+    uint public MINTFEE = 0;
     
     // Maximum number of individual nft tokenIds that can be created
-    uint128 public maxMints;
+    uint128 public maxMints = 9000;
     mapping(uint256 => string) internal tokenURIs;
     
 
@@ -105,11 +109,11 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         return tokenURIs[_tokenId];
         }
         // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        if (bytes(tokenURIs[_tokenId]).length > 0) {
+ /*       if (bytes(tokenURIs[_tokenId]).length > 0) {
         return string(abi.encodePacked(baseUri, _tokenId, imageExtension));
-        }
-
-        return super.uri(_tokenId);
+        } */
+        return string(abi.encodePacked(baseUri,ArMe[_tokenId].ipfs, imageExtension));
+  //      return super.uri(_tokenId);
     }
 
     function batchMint(
@@ -122,13 +126,14 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         require(msg.value == MINTFEE * _amounts.length, "Not enough ftm");
 
         uint[] memory ids = new uint[](_amounts.length);
-        for (uint i = 0; i < _amounts.length; ++i) {
-            tokenIds.increment();
+        for (uint i = 0; i < _amounts.length; ++i) {   
             uint256 id = tokenIds.current();
             ids[i] = id;
             ArEf[id] = _effects[id];
+            ArEf[id].id = uint16(id);
             ArMe[id] = _metadata[id]; //date of release cannot be editted. that is the uniqueness and value of NFT
             ArMe[id].timestamp = uint32(block.timestamp);
+            tokenIds.increment();
         }
 
         require(tokenIds.current() <= maxMints);
@@ -149,12 +154,13 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         ArtifactsMetadata memory _metadata
     ) external payable onlyOwner {
         require(msg.value == MINTFEE, "Not enough ftm");
-        tokenIds.increment();
         uint256 id = tokenIds.current();
         _mint(_to, id, _amount, ""); //give ownership to ID
         ArEf[id] = _effects;
+        ArEf[id].id = uint16(id);
         ArMe[id] = _metadata; //date of release cannot be editted. that is the uniqueness and value of NFT
         ArMe[id].timestamp = uint32(block.timestamp);
+        tokenIds.increment();
         require(tokenIds.current() <= maxMints);
         if (tokenIds.current() == maxMints) {
         emit MaxMintsReached();
@@ -188,14 +194,99 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         return ERC1155.isApprovedForAll(_owner, _operator);
     }
 
+
+    //-------------------- Action -------------------------
+
+    function equipArtifacts(address _player, uint[] memory _artifacts) public {
+        require(_player == msg.sender && _artifacts.length == 3);
+    
+        uint8 R0 = ArEf[_artifacts[0]].R;
+        uint8 R1 = ArEf[_artifacts[1]].R;
+        uint8 R2 = ArEf[_artifacts[2]].R;
+        
+        require(R0 == 1 || R0 == 0);  //right artifact must be in right slot. for R = 0, means its gold, so no effect/default
+        require(R1 == 2 || R1 == 0);
+        require(R2 == 3 || R2 == 0);
+        
+        PlayerEquiped[_player] = _artifacts;
+    }
+
+    function getEquipedArtifactsEffects(address _player) public view returns (uint[] memory artifactsEffects){
+        uint[] memory artifacts = PlayerEquiped[_player];
+        uint A;
+        uint B;
+        uint C;
+        uint D;
+        for (uint8 i ; i< 3 ; i++){
+            
+        }
+
+    }
+
+
+
     function withdraw(address payable _to) external { //incase someone want to donate to me? who knows. haha
         require(_to == owner());
         (bool sent,) = _to.call{value: address(this).balance}("");
         require(sent);
     }
 
-    //_balances
 
+
+
+    //----------read only -------------
+    function viewArEf(uint256 _tokenId) external view returns (ArtifactsEffects memory) {
+        return ArEf[_tokenId];
+    }
+    function viewArMe(uint256 _tokenId) external view returns (ArtifactsMetadata memory) {
+        return ArMe[_tokenId];
+    }
+    
+    function getArtifactsByOwner(address _owner) public view returns(uint[] memory) {
+        uint[] memory ownedBalance = new uint[](tokenIds.current()); //id's balance in order
+        for (uint i = 0; i < tokenIds.current(); i++) {
+            if (balanceOf(_owner,i) > 0) {
+                ownedBalance[i] = balanceOf(_owner,i);
+            }
+        }
+        return ownedBalance;
+    }
+    function getNumberofUniqueArtifactsof(address _owner) public view returns(uint[] memory) {
+        uint[] memory ownedBalance = getArtifactsByOwner(_owner);
+        uint counter;
+        for (uint i = 0; i < ownedBalance.length; i++) {
+            if (ownedBalance[i] > 0) {
+                counter++;
+            }
+        }
+        return ownedBalance;
+    }
+    function getAllArtifactsEffects(uint _start, uint _stop) public view returns(ArtifactsEffects[] memory) {
+        uint _totalcount;
+        if (_stop-_start+1 < tokenIds.current()) {
+            _totalcount = _stop-_start+1;
+        } else {
+            _totalcount = tokenIds.current();
+        }
+        ArtifactsEffects[] memory allArEf = new ArtifactsEffects[](_totalcount); //id's balance in order
+        for (uint i = _start; i < _start+_totalcount; i++) {
+            allArEf[i] = ArEf[i];
+        }
+        return allArEf;
+    }
+    function getAllArtifactsMetadata(uint _start, uint _stop) public view returns(ArtifactsMetadata[] memory) {
+        uint _totalcount;
+        if (_stop-_start+1 < tokenIds.current()) {
+            _totalcount = _stop-_start+1;
+        } else {
+            _totalcount = tokenIds.current();
+        }
+        ArtifactsMetadata[] memory allArMe = new ArtifactsMetadata[](_totalcount); //id's balance in order
+        for (uint i = _start; i < _start+_totalcount; i++) {
+            allArMe[i] = ArMe[i];
+        }
+        return allArMe;
+    }
 
 
 
