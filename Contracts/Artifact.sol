@@ -200,9 +200,9 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     function equipArtifacts(address _player, uint[] memory _artifacts) public {
         require(_player == msg.sender && _artifacts.length == 3);
     
-        uint8 R0 = ArEf[_artifacts[0]].R;
-        uint8 R1 = ArEf[_artifacts[1]].R;
-        uint8 R2 = ArEf[_artifacts[2]].R;
+        uint8 R0 = ArMe[_artifacts[0]].slot;
+        uint8 R1 = ArMe[_artifacts[1]].slot;
+        uint8 R2 = ArMe[_artifacts[2]].slot;
         
         require(R0 == 1 || R0 == 0);  //right artifact must be in right slot. for R = 0, means its gold, so no effect/default
         require(R1 == 2 || R1 == 0);
@@ -211,28 +211,44 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         PlayerEquiped[_player] = _artifacts;
     }
 
-    function getEquipedArtifactsEffects(address _player) public view returns (uint[] memory artifactsEffects){
+    function getEquipedArtifactsEffects(address _player) public view returns (uint32[4] memory ABCD) {
         uint[] memory artifacts = PlayerEquiped[_player];
-        uint A;
-        uint B;
-        uint C;
-        uint D;
-        for (uint8 i ; i< 3 ; i++){
-            
+        uint8 multiplier;
+        
+        for (uint8 i = 0; i < 3; i++) {
+            if (balanceOf(_player, artifacts[i]) >= 256) {
+                multiplier = 9;
+            } else if (balanceOf(_player, artifacts[i]) >= 128) {
+                multiplier = 8;
+            } else if (balanceOf(_player, artifacts[i]) >= 64) {
+                multiplier = 7;
+            } else if (balanceOf(_player, artifacts[i]) >= 32) {
+                multiplier = 6;
+            } else if (balanceOf(_player, artifacts[i]) >= 16) {
+                multiplier = 5;
+            } else if (balanceOf(_player, artifacts[i]) >= 8) {
+                multiplier = 4;
+            } else if (balanceOf(_player, artifacts[i]) >= 4) {
+                multiplier = 3;
+            } else if (balanceOf(_player, artifacts[i]) >= 2) {
+                multiplier = 2;
+            } else if (balanceOf(_player, artifacts[i]) >= 1) {
+                multiplier = 1;
+            }
+            if (multiplier > 0) {
+                ABCD[0] = ABCD[0] + (ArEf[artifacts[i]].A * multiplier);
+                ABCD[1] = ABCD[1] + (ArEf[artifacts[i]].B * multiplier);
+                ABCD[2] = ABCD[2] + (ArEf[artifacts[i]].C * multiplier);
+                ABCD[3] = ABCD[3] + (ArEf[artifacts[i]].D * multiplier);
+            }
         }
-
     }
-
-
 
     function withdraw(address payable _to) external { //incase someone want to donate to me? who knows. haha
         require(_to == owner());
         (bool sent,) = _to.call{value: address(this).balance}("");
         require(sent);
     }
-
-
-
 
     //----------read only -------------
     function viewArEf(uint256 _tokenId) external view returns (ArtifactsEffects memory) {
