@@ -31,6 +31,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     string public name = "FantomAdventureRPG Artifact";
     string public symbol = "aFARPG";
     uint16 private constant MAX_MINTABLE = 9999;
+    bool public confirmed = false;
     // A struct to hold the Artifact's effects, keep it simple as it needed by master contract
     struct ArtifactsEffects {
         uint16 id;         // The unique ID of the Pet, used to track the same token
@@ -58,6 +59,29 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     uint public royalty; // base 10000, 750 royalty means 7.5%
     address public royaltyRecipient;
 
+    event MaxMintsReached();
+    event UpdateName(string name);
+    event Ignore(bool ignore);
+
+    using Counters for Counters.Counter;
+    Counters.Counter public tokenIds;
+    using Strings for uint256;
+
+    // Master contract, that can reward players from this reward.
+    address public masterContract;
+    // The fee for minting
+    uint public MINTFEE = 0;
+
+    function setMasterContract (address _master) public onlyOwner {
+        if (confirmed == false) {
+            masterContract = _master;
+        }
+    }
+    function confirmMasterContract () public onlyOwner {
+        confirmed = true;
+    }
+
+
     function royaltyInfo(uint256, uint256 _salePrice)
         external
         view
@@ -81,19 +105,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     }
 
    
-    event MaxMintsReached();
-    event UpdateName(string name);
-    event Ignore(bool ignore);
-
     
-    using Counters for Counters.Counter;
-    Counters.Counter public tokenIds;
-    using Strings for uint256;
-
-    // Master contract, that can reward players from this reward.
-    address internal mastercontract;
-    // The fee for minting
-    uint public MINTFEE = 0;
     
     // Maximum number of individual nft tokenIds that can be created
     uint128 public maxMints = 9000;
@@ -117,7 +129,6 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     }
 
     function batchMint(
-        address _to,
         uint256[] memory _amounts,
         ArtifactsEffects[] memory _effects,
         ArtifactsMetadata[] memory _metadata
@@ -141,21 +152,20 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         emit MaxMintsReached();
         }
 
-        _mintBatch(_to, ids, _amounts, "");
+        _mintBatch(masterContract, ids, _amounts, "");
 
- 
+
     }
 
     // The uri must be in the form of ipfs:// where the ipfs:// prefix has been stripped
     function mint(
-        address _to,
         uint _amount, //want to fix an amount, gold?100m artifact?10k
         ArtifactsEffects memory _effects,
         ArtifactsMetadata memory _metadata
     ) external payable onlyOwner {
         require(msg.value == MINTFEE, "Not enough ftm");
         uint256 id = tokenIds.current();
-        _mint(_to, id, _amount, ""); //give ownership to ID
+        _mint(masterContract, id, _amount, ""); //give ownership to ID
         ArEf[id] = _effects;
         ArEf[id].id = uint16(id);
         ArMe[id] = _metadata; //date of release cannot be editted. that is the uniqueness and value of NFT
@@ -187,7 +197,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     * Override isApprovedForAll to whitelist the mastercontract to reward players
     */
     function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
-        if (_operator == mastercontract) {
+        if (_operator == masterContract) {
         return true;
         }
 
@@ -249,6 +259,10 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         (bool sent,) = _to.call{value: address(this).balance}("");
         require(sent);
     }
+
+
+
+
 
     //----------read only -------------
     function viewArEf(uint256 _tokenId) external view returns (ArtifactsEffects memory) {
