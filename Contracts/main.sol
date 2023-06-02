@@ -26,6 +26,12 @@ interface IERC2981 is IERC165 {
     returns (address receiver, uint256 royaltyAmount);
 } 
 
+interface ContractArtifactInterface {
+    function rewardSystem (uint8[4] calldata , address , uint) external;
+}
+
+
+
 
 
 contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
@@ -78,7 +84,13 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     //TowerLevel 0 is havent start. 1 to 20 is level one.
     // 21 to 40 is level two, and so on. to 181 to 200 for level 10. 
     mapping (address => uint8) public TowerLevel; 
+    mapping (address => uint32) public TowerResetCd; 
     A.Pets[MAX_MINTABLE] public Pet;
+
+    // artifact contract, that can be used to reward players from this contract
+    ContractArtifactInterface ArtifactContract; //need global, other functions need it.
+    bool confirmed;
+
 
     event Result(uint256 indexed id, bool won, uint256 hash, A.Pets selfOrBefore, A.Pets opponOrAfter, uint64 damage, uint bit);
     event StatChangedResult(A.Pets AfterMon);
@@ -154,23 +166,44 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         uint64 damage; //dealt total damage to Mon2
         uint rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp)));
         A.Pets memory BattlingPet;
+        
         if (_rank <= 3) { //tag along with Mon1Win to reduce stack
             BattlingPet = core.battlingPet(_rank,rand);
         } else {
+            require(TowerLevel[msg.sender] > 0, "TowerLevel0");
             BattlingPet = core.TowerPet(TowerLevel[msg.sender]);
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
 
-        if (Mon1Win == false) { //tag along with Mon1Win to reduce stack
-            BattlingPet = core.battlingPet(_rank,rand);
-        }
+       
+
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
         Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank); //exp stars gain   
         Pet[_id].time.stamina += BATTLESTAMINA; // take up stamina
         emit Result(_id, Mon1Win, BattleRhythm, Pet[_id], BattlingPet,damage, bit); //done battle
         
     }
-  
+    function resetTowerLevel() public {
+        if (block.timestamp - TowerResetCd[msg.sender] > 50) { //50s cooldown for reset the level to prevent spam
+            TowerLevel[msg.sender] = (uint8(uint(keccak256(abi.encodePacked(msg.sender, block.timestamp,block.coinbase))))%20)+1;
+            TowerResetCd[msg.sender] = uint32(block.timestamp);
+        } else {
+            revert();
+        }
+    }
+    
+    function setArtifactContract (address _artifact) public onlyOwner {
+        if (confirmed == false) {
+            ArtifactContract = ContractArtifactInterface(_artifact);
+        }
+    }
+     
+    function confirmArtifactContract () public onlyOwner {
+        confirmed = true;
+    }
+
+
+
     //----------------------- Owner function ---------------------------------
     function withdraw(address payable _to) external { //incase someone want to donate to me? who knows. haha
         require(_to == owner());
@@ -233,7 +266,9 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         //E.toString(tokenId)
         return Meta.buildURIbased64(Pet[tokenId],imageURL, imageExtension,uint64(block.timestamp),namebyID);
     } //I wish Marketplaces able to comply to this...
-
+    function viewTowerMonster(address _owner) public view returns (A.Pets memory){
+        return core.TowerPet(TowerLevel[_owner]);
+    }
 //--------------------------------------
 //ONLY FOR TESTING
     function cheatSTATS(uint _id) public {
