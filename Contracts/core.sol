@@ -122,8 +122,8 @@ library core {
             _randegg, // type of Pet species (egg 0 to 4)
             10**_randegg, // gene
             A.attributes(
-                uint8(_RandNumb(_deRand<<8,150,50)), // happiness
-                uint8(_RandNumb(_deRand<<16,150,50)), // discipline
+                uint8(_RandNumb((_deRand>>8)+_deRand,150,50)), // happiness
+                uint8(_RandNumb((_deRand>>16)+_deRand,150,50)), // discipline
                 0, // id (will be replaced in main function)
                 100, // weight
                 0 // stage
@@ -145,7 +145,7 @@ library core {
             [0,0,0], // trait
             [0,0,0], // skill
             0, // status (0 = active)
-            uint16(_RandNumb(_deRand<<24,4,0)), // family
+            uint16(_RandNumb((_deRand>>24)+_deRand,4,0)), // family
             false // shinning (only for evolve, revive reset to false)
         ); 
     }
@@ -332,37 +332,37 @@ library core {
         //rank 0 = stage1, 1= stage2, 2= stage3, 3=stage4
         _BattlingPet.attribute.id = 10001;
         _BattlingPet.attribute.stage = rank+1;
-        _BattlingPet.family = uint16(_RandNumb(rand<<4,4,0));
+        _BattlingPet.family = uint16(_RandNumb((rand>>4)+rand,4,0));
         if (rank ==0 ) { 
             _BattlingPet.species = uint8(_RandNumb(rand,9,5));
-            _BattlingPet.attribute.weight = _RandNumb(rand<<5,2500,1000);
-            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,40000,10000);
-            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,50,10));
-            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,50,10));
-            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,50,10));
+            _BattlingPet.attribute.weight = _RandNumb((rand>>5)+rand,2500,1000);
+            _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+rand,40000,10000);
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+rand,50,10));
+            _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+rand,50,10));
+            _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+rand,50,10));
         } else if (rank == 1) {
             _BattlingPet.species = uint8(_RandNumb(rand,22,10));
-            _BattlingPet.attribute.weight = _RandNumb(rand<<5,4500,1500);
-            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,130000,5000);
-            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,130,55));
-            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,130,55));
-            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,130,55));
+            _BattlingPet.attribute.weight = _RandNumb((rand>>5)+rand,4500,1500);
+            _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+rand,130000,5000);
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+rand,130,55));
+            _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+rand,130,55));
+            _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+rand,130,55));
             _BattlingPet.skill = [_BattlingPet.species,0,0];
         } else if (rank == 2) {
             _BattlingPet.species = uint8(_RandNumb(rand,42,23)); 
-            _BattlingPet.attribute.weight = _RandNumb(rand<<5,17500,1500);
-            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,420000,145000);
-            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,350,155));
-            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,350,155));
-            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,450,155));
+            _BattlingPet.attribute.weight = _RandNumb((rand>>5)+rand,17500,1500);
+            _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+rand,420000,145000);
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+rand,350,155));
+            _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+rand,350,155));
+            _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+rand,450,155));
             _BattlingPet.skill = [uint8(_RandNumb(rand,22,10)),_BattlingPet.species,0];    
         } else /*if (rank == 3)*/{
             _BattlingPet.species = uint8(_RandNumb(rand,63,43));
-            _BattlingPet.attribute.weight = _RandNumb(rand<<5,25000,1500);
-            _BattlingPet.power.hitpoints = _RandNumb(rand<<21,800000,275000);
-            _BattlingPet.power.strength = uint16(_RandNumb(rand<<41,590,275));
-            _BattlingPet.power.agility = uint16(_RandNumb(rand<<51,590,275));
-            _BattlingPet.power.intellegence = uint16(_RandNumb(rand<<61,790,275));
+            _BattlingPet.attribute.weight = _RandNumb((rand>>5)+rand,25000,1500);
+            _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+rand,800000,275000);
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+rand,590,275));
+            _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+rand,590,275));
+            _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+rand,790,275));
             _BattlingPet.skill = [uint8(_RandNumb(rand,22,10)),uint8(_RandNumb(rand,42,23)),_BattlingPet.species];   
         }
     }
@@ -441,7 +441,7 @@ library core {
         while (bit<=46 && _Pet1.power.hitpoints > 0 && _Pet2.power.hitpoints > 0 ){
             if (actionpoints1 <= actionpoints2) { //Pet1 move
                 bit++; //bit ++ first, means set '0'
-                _deRand = _deRand<<3;
+                _deRand = (_deRand>>3)+_deRand;
                 (BattleRhythm,effort,damage)=_chooseSkill(_deRand,_Pet1,BattleRhythm,bit);
                 bit=bit+2; //2bits has set in the function above for skill.
                 actionpoints1 = actionpoints1 + effort +  _Pet2.power.agility; // purposely reverse Pet2 agi to action 1
@@ -451,7 +451,7 @@ library core {
             } else { //Pet2 move
                 BattleRhythm = BattleRhythm + 2**bit; //encode who attack, 1 = Pet2 attack
                 bit++; //bit++ before set, means set '1'
-                _deRand = _deRand<<3;
+                _deRand = (_deRand>>3)+_deRand;
                 (BattleRhythm,effort,damage)=_chooseSkill(_deRand,_Pet2,BattleRhythm,bit);
                 bit=bit+2; //2bits has set in the function above.
                 actionpoints2 = actionpoints2 + effort +  _Pet1.power.agility; // purposely reverse Pet1 agi to action 2
@@ -467,7 +467,7 @@ library core {
         uint8 skill;
         BattleRhythm = _BattleRhythm;
         if (_RandNumb(_deRand,1300,1) <= 301+uint16(_Pet.power.intellegence)) { //use skills based 30% chances
-            skill = uint8(_RandNumb(_deRand<<3,2,0)); //translate to skill array 0 1 2
+            skill = uint8(_RandNumb((_deRand>>3)+_deRand,2,0)); //translate to skill array 0 1 2
             //skill == 0 means no need to set anything on skill (00)
             if (skill == 1) {BattleRhythm = BattleRhythm + 2**_bit;} //binary 00 (01) 10, set LSB
             _bit++;
