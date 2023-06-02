@@ -101,7 +101,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         uint _rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp,block.coinbase)));
 
         // Mint the Pet.
-        Pet[id] = core.mintEgg(_rand << ((tokenIdTracker % 50) * 3)); //<<((tokenIdTracker%100)*3)
+        Pet[id] = core.mintEgg(_rand >> ((tokenIdTracker % 50) * 3)); //>>((tokenIdTracker%15)*3)
         Pet[id].attribute.id = uint16(id);
         _safeMint(_to, id);
 
