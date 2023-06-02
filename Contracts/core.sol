@@ -375,6 +375,21 @@ library core {
         //e.g. level 1 and 2 = stage 1, 
         _TowerPet.attribute.stage = uint8(((TowerLevel*10)+801)/601); //stage: 1 1 2 2 2 3 3 3 4 4 
         _TowerPet.family = TowerLevel%5; //0 to 4
+        /* chances for 30 Artifact according to rarity
+        stage   ratio   15  9   6   30
+        1       1       8   1   0   
+        2       1       7   2   0   
+        3       1       6   2   1   
+        4       1       6   2   1   
+        5       1       5   3   1   
+        6       0       5   4   1   
+        7       0       4   4   2   
+        8       0       1   6   3   
+        9       0       0   5   5   
+        sum		        42	29	24	95
+	    ratio	       13.2 9.1 7.5	 common chances is low by assuming most people cant reach level 10
+        */
+        
 
         if (TowerLevel <= 20 ) { //level1 stage 1
             _TowerPet.species = 9;
