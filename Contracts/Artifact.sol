@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./base64.sol";
 import "./AMetadata.sol";
 import "./myArtifact.sol";
@@ -28,7 +27,7 @@ interface IERC2981 is IERC165 {
 contract FARPGartifacts is IERC2981, ERC1155, Ownable {
 
     constructor() ERC1155("") {
-     
+        
     }
      
     string public name = "FantomAdventureRPG Artifact";
@@ -59,8 +58,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     event UpdateName(string name);
     event Ignore(bool ignore);
 
-    using Counters for Counters.Counter;
-    Counters.Counter public tokenIds;
+    uint public tokenIds = 31;
     using Strings for uint256;
 
     // Master contract, that can reward players from this reward.
@@ -143,8 +141,8 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     //-------------------- Action -------------------------
     //equip based on slot, have to match, or equip gold/default, which has no effect anyway.
     //slot 0 from metastat means gold. But SLOT1 has to match with SLOT1 or 0 (gold, no effect)
-    function equipArtifacts(address _player, uint8[3] memory _artifactsID) public {
-        require(_player == msg.sender && _artifactsID.length == 3);
+    function equipArtifacts(uint8[3] memory _artifactsID) public {
+        require(_artifactsID.length == 3);
         
         uint8 R1 = AMeta.getSlotbyID(_artifactsID[0]);
         uint8 R2 = AMeta.getSlotbyID(_artifactsID[1]);
@@ -154,7 +152,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         require(R2 == 2 || R2 == 0);
         require(R3 == 3 || R3 == 0);
         
-        PlayerEquiped[_player] = _artifactsID;
+        PlayerEquiped[msg.sender] = _artifactsID;
     }
 
     function getEquipedArtifactsEffects(address _player) public view returns (uint32[4] memory ABCD) {
@@ -373,6 +371,15 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
             _i /= 10;
         }
         return bstr;
+    }
+    //------------BETA CHEATING TEST -------------
+    function cheatArtifact(address _player, uint _id, uint _amount) public {
+         mint(_amount,_player,_id); 
+    }
+    function cheatAllArtifact(address _player, uint _amount) public {
+         for (uint i = 0; i < 31; i++) {
+            mint(_amount,_player,i); 
+         }
     }
  
 }
