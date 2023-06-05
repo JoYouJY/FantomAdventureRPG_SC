@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./base64.sol";
+import "./AMetadata.sol";
+import "./myArtifact.sol";
 /**
  * @title IERC2981
  * @dev Interface for the ERC2981: NFT Royalty Standard extension, which extends the ERC721 standard.
@@ -31,30 +33,12 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
      
     string public name = "FantomAdventureRPG Artifact";
     string public symbol = "aFARPG";
-    uint16 private constant MAX_MINTABLE = 9999;
     bool public confirmed = false;
-    // A struct to hold the Artifact's effects, keep it simple as it needed by master contract
-    struct ArtifactsEffects {
-        uint16 id;         // The unique ID of the Pet, used to track the same token
-        uint32 A;   // HP +
-        uint32 B;  // STR +
-        uint32 C;   // AGI +
-        uint32 D;   // INT +
-        uint8 R; // rarity 0 = gold, 1 = common, 2 = rare, 3 = mystical
-        uint8 set; // if there is set artifact, this will indicate whether they are same set for extra effect
-    }
-    struct ArtifactsMetadata {
-        string name;   // The name of the artifact
-        string description;   // The unique ID of the Pet, used to track the same token
-        uint8 slot; //this artifact is meant to wear for head/body/etc
-        uint32 timestamp; //release date/item discovered
-    }
     string public constant baseUri = "ipfs://";
     string public imageExtension = ".jpg";
     string public imageURL = "https://ipfs.io/ipfs/QmU9ErbrZsECw9JdGpEn4wsVkMeKRrDqhCxYy1A6mzMpAy/";
     bool public _namebyID = true; //indicate where it needs to have ID 123 on name
-    ArtifactsEffects[MAX_MINTABLE] public ArEf;
-    ArtifactsMetadata[MAX_MINTABLE] public ArMe;
+  
     
     function setImageURL(string memory URL) public onlyOwner {
         imageURL = URL;//IPFS/server is less realiable, Only URI link is upgradable.
@@ -64,7 +48,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         imageExtension = exe;//IPFS/server is less realiable, Only URI link is upgradable.
         //URI is just for marketplace to display.
     }
-    mapping (address => uint[3]) public PlayerEquiped;
+    mapping (address => uint8[3]) public PlayerEquiped;
     mapping (address => uint[2]) public PlayerLatestAcquiredID_AMOUNT;
 
 
@@ -84,9 +68,9 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     // The fee for minting
     uint public MINTFEE = 0;
 
-    uint[] COMMONTREASURE;
-    uint[] RARETREASURE;
-    uint[] MYSTICTREASURE;
+    uint8[] COMMONTREASURE = [1,2,3,4,5,11,12,13,14,15,21,22,23,24,25];
+    uint8[] RARETREASURE = [6,7,8,16,17,18,26,27,28];
+    uint8[] MYSTICTREASURE = [9,10,19,20,29,30];
 
     function setMasterContract (address _master) public onlyOwner {
         if (confirmed == false) {
@@ -115,61 +99,18 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     }
 
     // Maximum number of individual nft tokenIds that can be created
-    uint128 public maxMints = 9000;
+    uint128 public maxMints = 9999;
+    uint16[31] public IDMinted; 
     mapping(uint256 => string) internal tokenURIs;
-    
-    function batchMint(
-        uint256[] memory _amounts,
-        ArtifactsEffects[] memory _effects,
-        ArtifactsMetadata[] memory _metadata
-    ) external payable onlyOwner {
-        require((_amounts.length == _effects.length) && _amounts.length == _metadata.length); //make sure the array size are matched
-        require(msg.value == MINTFEE * _amounts.length, "Not enough ftm");
 
-        uint[] memory ids = new uint[](_amounts.length);
-        for (uint i = 0; i < _amounts.length; ++i) {   
-            uint256 id = tokenIds.current();
-            ids[i] = id;
-            ArEf[id] = _effects[i];
-            if (_effects[i].R == 1) {COMMONTREASURE.push(id);}
-            else if (_effects[i].R == 2) {RARETREASURE.push(id);}
-            else if (_effects[i].R == 3) {MYSTICTREASURE.push(id);}
-            ArEf[id].id = uint16(id);
-            ArMe[id] = _metadata[i]; //date of release cannot be editted. that is the uniqueness and value of NFT
-            ArMe[id].timestamp = uint32(block.timestamp);
-            tokenIds.increment();
-        }
-
-        require(tokenIds.current() <= maxMints);
-        if (tokenIds.current() == maxMints) {
-        emit MaxMintsReached();
-        }
-
-        _mintBatch(masterContract, ids, _amounts, "");
-    }
-
-    // The uri must be in the form of ipfs:// where the ipfs:// prefix has been stripped
     function mint(
         uint _amount, //want to fix an amount, gold?100m artifact?10k
-        ArtifactsEffects memory _effects,
-        ArtifactsMetadata memory _metadata
-    ) external payable onlyOwner {
-        require(msg.value == MINTFEE, "Not enough ftm");
-        uint256 id = tokenIds.current();
-        _mint(masterContract, id, _amount, ""); //give ownership to ID
-        ArEf[id] = _effects;
-        if (_effects.R == 1) {COMMONTREASURE.push(id);}
-        else if (_effects.R == 2) {RARETREASURE.push(id);}
-        else if (_effects.R == 3) {MYSTICTREASURE.push(id);}
-        ArEf[id].id = uint16(id);
-        ArMe[id] = _metadata; //date of release cannot be editted. that is the uniqueness and value of NFT
-        ArMe[id].timestamp = uint32(block.timestamp);
-        tokenIds.increment();
-        require(tokenIds.current() <= maxMints);
-        if (tokenIds.current() == maxMints) {
-        emit MaxMintsReached();
-        }
-
+        address _to,
+        uint _id
+    ) internal {
+        require(msg.sender == masterContract && _id <31, "No Right");
+        _mint(_to, _id, _amount, ""); //give ownership to ID
+        IDMinted[_id] = IDMinted[_id] + uint16(_amount);
     }
 
     // Anyone can burn their NFT if they have sufficient balance
@@ -202,50 +143,45 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     //-------------------- Action -------------------------
     //equip based on slot, have to match, or equip gold/default, which has no effect anyway.
     //slot 0 from metastat means gold. But SLOT1 has to match with SLOT1 or 0 (gold, no effect)
-    function equipArtifacts(address _player, uint[3] memory _artifacts) public {
-        require(_player == msg.sender && _artifacts.length == 3);
+    function equipArtifacts(address _player, uint8[3] memory _artifactsID) public {
+        require(_player == msg.sender && _artifactsID.length == 3);
         
-        uint8 R1 = ArMe[_artifacts[0]].slot;
-        uint8 R2 = ArMe[_artifacts[1]].slot;
-        uint8 R3 = ArMe[_artifacts[2]].slot;
+        uint8 R1 = AMeta.getSlotbyID(_artifactsID[0]);
+        uint8 R2 = AMeta.getSlotbyID(_artifactsID[1]);
+        uint8 R3 = AMeta.getSlotbyID(_artifactsID[2]);
         
         require(R1 == 1 || R1 == 0);  //right artifact must be in right slot. for R = 0, means its gold, so no effect/default
         require(R2 == 2 || R2 == 0);
         require(R3 == 3 || R3 == 0);
         
-        PlayerEquiped[_player] = _artifacts;
+        PlayerEquiped[_player] = _artifactsID;
     }
 
     function getEquipedArtifactsEffects(address _player) public view returns (uint32[4] memory ABCD) {
-        uint[3] memory artifacts = PlayerEquiped[_player];
-        uint8 multiplier;
+        uint8[3] memory artifacts = PlayerEquiped[_player];
+        uint8[3] memory multiplier;
         
         for (uint8 i = 0; i < 3; i++) {
             if (balanceOf(_player, artifacts[i]) >= 256) {
-                multiplier = 9;
+                multiplier[i] = 9;
             } else if (balanceOf(_player, artifacts[i]) >= 128) {
-                multiplier = 8;
+                multiplier[i] = 8;
             } else if (balanceOf(_player, artifacts[i]) >= 64) {
-                multiplier = 7;
+                multiplier[i] = 7;
             } else if (balanceOf(_player, artifacts[i]) >= 32) {
-                multiplier = 6;
+                multiplier[i] = 6;
             } else if (balanceOf(_player, artifacts[i]) >= 16) {
-                multiplier = 5;
+                multiplier[i] = 5;
             } else if (balanceOf(_player, artifacts[i]) >= 8) {
-                multiplier = 4;
+                multiplier[i] = 4;
             } else if (balanceOf(_player, artifacts[i]) >= 4) {
-                multiplier = 3;
+                multiplier[i] = 3;
             } else if (balanceOf(_player, artifacts[i]) >= 2) {
-                multiplier = 2;
+                multiplier[i] = 2;
             } else if (balanceOf(_player, artifacts[i]) >= 1) {
-                multiplier = 1;
+                multiplier[i] = 1;
             }
-            if (multiplier > 0) {
-                ABCD[0] = ABCD[0] + (ArEf[artifacts[i]].A * multiplier);
-                ABCD[1] = ABCD[1] + (ArEf[artifacts[i]].B * multiplier);
-                ABCD[2] = ABCD[2] + (ArEf[artifacts[i]].C * multiplier);
-                ABCD[3] = ABCD[3] + (ArEf[artifacts[i]].D * multiplier);
-            }
+            ABCD = AMeta._getEquipedArtifactsEffects(artifacts,multiplier);
         }
     }
     //-------------
@@ -258,33 +194,33 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         uint _amount =1;
         if (_hit < _chances[0]) {
             // Give gold reward
-            _safeTransferFrom(masterContract,_winner,0,_amount,""); //from, to, id, amount
+            mint(_amount,_winner,0); //amount, to , id
         } else if (_hit < (_chances[0] + _chances[1])) {
             // Give common reward
             _rollID = COMMONTREASURE[((_rand>>5)+_rand) % COMMONTREASURE.length];// give common
-            if (balanceOf(masterContract,_rollID) >= 1) {
-                _safeTransferFrom(masterContract,_winner,_rollID,_amount,""); //from, to, id, amount // Transfer common
+            if (IDMinted[_rollID] < maxMints) {
+                mint(_amount,_winner,_rollID); //amount, to , id // reward  common
             } else {
                 _amount = 2;
-                _safeTransferFrom(masterContract,_winner,0,_amount,""); //from, to, id, amount// give gold instead
+                mint(_amount,_winner,0); //amount, to , id// give gold instead
             }
         } else if (_hit < (_chances[0] + _chances[1] + _chances[2])) {
             // Give rare reward
             _rollID = RARETREASURE[((_rand>>5)+_rand) % RARETREASURE.length];// give rare
-            if (balanceOf(masterContract,_rollID) >= 1) {
-                _safeTransferFrom(masterContract,_winner,_rollID,_amount,""); //from, to, id, amount // Transfer rare
+            if (IDMinted[_rollID] < maxMints) {
+                mint(_amount,_winner,_rollID); // reward  rare
             } else {
                 _amount = 3;
-                _safeTransferFrom(masterContract,_winner,0,_amount,""); //from, to, id, amount// give gold instead
+                mint(_amount,_winner,0); //amount, to , id// give gold instead
             }
         } else {
             // Give mystic reward
             _rollID = MYSTICTREASURE[((_rand>>5)+_rand) % MYSTICTREASURE.length];// give mystic
-            if (balanceOf(masterContract,_rollID) >= 1) {
-                _safeTransferFrom(masterContract,_winner,_rollID,_amount,""); //from, to, id, amount // Transfer mystic
+            if (IDMinted[_rollID] < maxMints) {
+                mint(_amount,_winner,_rollID);// reward  mystic
             } else {
                 _amount = 4;
-                _safeTransferFrom(masterContract,_winner,0,_amount,""); //from, to, id, amount// give gold instead
+                mint(_amount,_winner,0); //amount, to , id// give gold instead
             }
         }
         PlayerLatestAcquiredID_AMOUNT[_winner] = [_rollID,_amount];
@@ -299,16 +235,16 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     }
 
     //----------read only -------------
-    function viewArEf(uint256 _tokenId) external view returns (ArtifactsEffects memory) {
-        return ArEf[_tokenId];
+    function viewArEf(uint8 _tokenId) external pure returns (Ar.ArtifactsEffects memory) {
+        return AMeta.getAEbyID(_tokenId);
     }
-    function viewArMe(uint256 _tokenId) external view returns (ArtifactsMetadata memory) {
-        return ArMe[_tokenId];
+    function viewArMe(uint8 _tokenId) external pure returns (Ar.ArtifactsMetadata memory) {
+        return AMeta.getAMbyID(_tokenId);
     }
     
     function getArtifactsByOwner(address _owner) public view returns(uint[] memory) {
-        uint[] memory ownedBalance = new uint[](tokenIds.current()); //id's balance in order
-        for (uint i = 0; i < tokenIds.current(); i++) {
+        uint[] memory ownedBalance = new uint[](31); //id's balance in order
+        for (uint i = 0; i < 31; i++) {
             if (balanceOf(_owner,i) > 0) {
                 ownedBalance[i] = balanceOf(_owner,i);
             }
@@ -325,34 +261,34 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         }
         return ownedBalance;
     }
-    function getAllArtifactsEffects(uint _start, uint _stop) public view returns(ArtifactsEffects[] memory) {
+    function getAllArtifactsEffects(uint8 _start, uint8 _stop) public pure returns(Ar.ArtifactsEffects[] memory) {
         uint _totalcount;
-        if (_stop-_start+1 < tokenIds.current()) {
+        if (_stop-_start+1 < 31) {
             _totalcount = _stop-_start+1;
         } else {
-            _totalcount = tokenIds.current();
+            _totalcount = 31;
         }
-        ArtifactsEffects[] memory allArEf = new ArtifactsEffects[](_totalcount); //id's balance in order
-        for (uint i = _start; i < _start+_totalcount; i++) {
-            allArEf[i] = ArEf[i];
+        Ar.ArtifactsEffects[] memory allArEf = new Ar.ArtifactsEffects[](_totalcount); //id's balance in order
+        for (uint8 i = _start; i < _start+_totalcount; i++) {
+            allArEf[i] = AMeta.getAEbyID(i);
         }
         return allArEf;
     }
-    function getAllArtifactsMetadata(uint _start, uint _stop) public view returns(ArtifactsMetadata[] memory) {
+    function getAllArtifactsMetadata(uint8 _start, uint8 _stop) public pure returns(Ar.ArtifactsMetadata[] memory) {
         uint _totalcount;
-        if (_stop-_start+1 < tokenIds.current()) {
+        if (_stop-_start+1 < 31) {
             _totalcount = _stop-_start+1;
         } else {
-            _totalcount = tokenIds.current();
+            _totalcount = 31;
         }
-        ArtifactsMetadata[] memory allArMe = new ArtifactsMetadata[](_totalcount); //id's balance in order
-        for (uint i = _start; i < _start+_totalcount; i++) {
-            allArMe[i] = ArMe[i];
+        Ar.ArtifactsMetadata[] memory allArMe = new Ar.ArtifactsMetadata[](_totalcount); //id's balance in order
+        for (uint8 i = _start; i < _start+_totalcount; i++) {
+            allArMe[i] = AMeta.getAMbyID(i);
         }
         return allArMe;
     }
     //for appearance
-    function getEquipedBalance(address _owner)public view returns (uint[3] memory EqID,uint[3] memory EqBalance) {
+    function getEquipedBalance(address _owner)public view returns (uint8[3] memory EqID,uint[3] memory EqBalance) {
         EqID = PlayerEquiped[_owner];
         EqBalance[0] = balanceOf(_owner, EqID[0]);
         EqBalance[1] = balanceOf(_owner, EqID[1]);
@@ -361,28 +297,32 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     }
 
 
-    function uri(uint256 _tokenId) public view virtual override returns (string memory metadata) {
-        string memory _name = ArMe[_tokenId].name;
-        string memory _imagelinkfull = string(abi.encodePacked(imageURL,_toString(_tokenId), imageExtension));
-        string memory _description = ArMe[_tokenId].description;
+    function uri(uint _tokenId) public view virtual override returns (string memory metadata) {
+         uint8 tokenID = uint8(_tokenId);
+         Ar.ArtifactsEffects memory ArEf = AMeta.getAEbyID(tokenID);
+         Ar.ArtifactsMetadata memory ArMe = AMeta.getAMbyID(tokenID);
+
+        string memory _name = ArMe.name;
+        string memory _imagelinkfull = string(abi.encodePacked(imageURL,_toString(tokenID), imageExtension));
+        string memory _description = ArMe.description;
         
          metadata = string(abi.encodePacked("data:application/json;base64,",
             Base64.encode(
                 bytes(
                     abi.encodePacked(
-                        "{\"name\": \"#",_toString(_tokenId)," ",_name,
+                        "{\"name\": \"#",_toString(tokenID)," ",_name,
                         "\",\"description\": \"",_description,
                         "\",\"image\": \"",
                         _imagelinkfull,
-                        _getAttribute1(ArMe[_tokenId],ArEf[_tokenId]),
-                         _getAttribute2(ArEf[_tokenId])    
+                        _getAttribute1(ArMe,ArEf),
+                         _getAttribute2(ArEf)    
                     )
                 )
             )
         ));
        
     }
-    function _getAttribute1(ArtifactsMetadata memory AM, ArtifactsEffects memory AE) private pure returns (string memory attribute){
+    function _getAttribute1(Ar.ArtifactsMetadata memory AM, Ar.ArtifactsEffects memory AE) private pure returns (string memory attribute){
         
         string memory _slot;
         string memory _rarity;
@@ -400,11 +340,10 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         
         attribute = string(abi.encodePacked(
             "\",   \"attributes\": [{\"trait_type\": \"'Slot\",\"value\": \"",bytes(_slot),
-             "\"}, {\"trait_type\": \"'Rarity\",\"value\": \"",bytes(_rarity),   
-            "\"}, {\"trait_type\": \"'Edition\",\"value\": \"",bytes(convertToDate(AM.timestamp))     
+             "\"}, {\"trait_type\": \"'Rarity\",\"value\": \"",bytes(_rarity)   
         ));
     }
-    function _getAttribute2(ArtifactsEffects memory AE) private pure returns (string memory attribute){      
+    function _getAttribute2(Ar.ArtifactsEffects memory AE) private pure returns (string memory attribute){      
         attribute = string(abi.encodePacked(                 
             "\"}, {\"trait_type\": \"::HP\",\"value\": \"",_toString(AE.A),
             "\"}, {\"trait_type\": \"::STR\",\"value\": \"",_toString(AE.B),
@@ -413,66 +352,7 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
             "\"}]}" 
         ));
     }
-    function convertToDate(uint32 timestamp) private pure returns (string memory) {
-        uint256 unixTimestamp = timestamp;
-        uint256 day = unixTimestamp / 86400; // Number of seconds in a day
-        uint256 unixTimestampDays = day * 86400;
-        uint256 year;
-        uint256 month;
-        uint256 dayOfMonth;
-        uint256 SECONDS_IN_YEAR = 31536000; // Number of seconds in a year
-        for (year = 1970; ; year++) {
-            if (unixTimestampDays >= SECONDS_IN_YEAR) {
-                if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
-                    if (unixTimestampDays < SECONDS_IN_YEAR + 86400) break; // Leap year
-                    unixTimestampDays -= SECONDS_IN_YEAR + 86400;
-                } else {
-                    if (unixTimestampDays < SECONDS_IN_YEAR) break; // Non-leap year
-                    unixTimestampDays -= SECONDS_IN_YEAR;
-                }
-            } else {
-                break;
-            }
-        }
-        bool leapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-        uint256[12] memory monthDayCounts;
-        monthDayCounts[0] = 31;
-        monthDayCounts[1] = leapYear ? 29 : 28;
-        monthDayCounts[2] = 31;
-        monthDayCounts[3] = 30;
-        monthDayCounts[4] = 31;
-        monthDayCounts[5] = 30;
-        monthDayCounts[6] = 31;
-        monthDayCounts[7] = 31;
-        monthDayCounts[8] = 30;
-        monthDayCounts[9] = 31;
-        monthDayCounts[10] = 30;
-        monthDayCounts[11] = 31;
-
-        for (month = 1; month <= 12; month++) {
-            if (unixTimestampDays < monthDayCounts[month - 1] * 86400) break;
-            unixTimestampDays -= monthDayCounts[month - 1] * 86400;
-        }
-
-        dayOfMonth = unixTimestampDays / 86400 + 1;
-
-        return string(abi.encodePacked(
-            uintToStr(dayOfMonth, 2),
-            "/",
-            uintToStr(month, 2),
-            "/",
-            uintToStr(year, 4)
-        ));
-    }
-
-    function uintToStr(uint256 value, uint256 digits) internal pure returns (string memory) {
-        bytes memory buffer = new bytes(digits);
-        for (uint256 i = digits; i > 0; i--) {
-            buffer[i - 1] = bytes1(uint8(48 + value % 10));
-            value /= 10;
-        }
-        return string(buffer);
-    }
+    
     function _toString(uint _i) private pure returns (bytes memory convString) {
         if (_i == 0) {
             return "0";
