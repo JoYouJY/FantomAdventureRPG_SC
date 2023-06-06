@@ -117,6 +117,7 @@ library core {
     */
     function mintEgg(uint _deRand) external pure returns (A.Pets memory Pet) {
         uint8 _randegg = uint8(_RandNumb(_deRand,2,0));
+        if (_randegg >0) {_randegg = _randegg + 1;}
         //33% for each egg
         Pet = A.Pets(
             _randegg, // type of Pet species (egg 0 to 4)
@@ -367,14 +368,14 @@ library core {
         }
     }
 
-    function TowerPet(uint8 TowerLevel, uint _deRand) external pure returns(A.Pets memory _TowerPet, uint8[4] memory _chances, uint8 _nextTowerLevel) {
+    function TowerPet(uint32 TowerLevel, uint _deRand) external pure returns(A.Pets memory _TowerPet, uint8[4] memory _chances, uint8 _nextTowerLevel) {
         //rank 0 = stage1, 1= stage2, 2= stage3, 3=stage4
         _TowerPet.attribute.id = 10001;
         //TowerLevel 1~20 = level1, 10 level max. so stage 1 to 4, 2.5 stage each.
         //Towerlevel/41 = stage, max TowerLevel 200, = stage 4 (rounded)
         //e.g. level 1 and 2 = stage 1, 
         _TowerPet.attribute.stage = uint8(((TowerLevel*10)+801)/601); //stage: 1 1 2 2 2 3 3 3 4 4 
-        _TowerPet.family = TowerLevel%5; //0 to 4
+        _TowerPet.family = uint8(TowerLevel%5); //0 to 4
         /* chances for 30 Artifact according to rarity
         stage   ratio   15  9   6   30
         1       1       8   1   0   
@@ -392,89 +393,89 @@ library core {
         if (TowerLevel <= 20 ) { //level1 stage 1
             _TowerPet.species = 5;
             _TowerPet.power.hitpoints = 15000+TowerLevel*700;
-            _TowerPet.power.strength = 10+((TowerLevel*75)%50);
-            _TowerPet.power.agility = 10+((TowerLevel*88)%50);
-            _TowerPet.power.intellegence = 10+((TowerLevel*33)%50);
+            _TowerPet.power.strength = uint16(10+((TowerLevel*75)%50));
+            _TowerPet.power.agility = uint16(10+((TowerLevel*88)%50));
+            _TowerPet.power.intellegence = uint16(10+((TowerLevel*33)%50));
             _chances = [1,8,1,0];
             _nextTowerLevel = uint8(_RandNumb(_deRand,40,21));
         } else if (TowerLevel <= 40 ) { //level2 stage 1
             _TowerPet.species = 7;
             _TowerPet.power.hitpoints = 18000+((TowerLevel*900)%18000);
-            _TowerPet.power.strength = 30+((TowerLevel*75)%50);
-            _TowerPet.power.agility = 30+((TowerLevel*88)%50);
-            _TowerPet.power.intellegence = 30+((TowerLevel*33)%50);
+            _TowerPet.power.strength = uint16(30+((TowerLevel*75)%50));
+            _TowerPet.power.agility = uint16(30+((TowerLevel*88)%50));
+            _TowerPet.power.intellegence = uint16(30+((TowerLevel*33)%50));
             _TowerPet.skill = [_TowerPet.species,0,0];
             _chances = [1,7,2,0];
             _nextTowerLevel = uint8(_RandNumb(_deRand,60,41));
         } else if (TowerLevel <= 60 ) { //level3 stage 2
             _TowerPet.species = 10;
             _TowerPet.power.hitpoints = 35000+((TowerLevel*1900)%30000);
-            _TowerPet.power.strength = 70+((TowerLevel*75)%70);
-            _TowerPet.power.agility = 70+((TowerLevel*88)%70);
-            _TowerPet.power.intellegence = 70+((TowerLevel*33)%70);
+            _TowerPet.power.strength = uint16(70+((TowerLevel*75)%70));
+            _TowerPet.power.agility = uint16(70+((TowerLevel*88)%70));
+            _TowerPet.power.intellegence = uint16(70+((TowerLevel*33)%70));
             _TowerPet.skill = [10,0,0]; 
             _chances = [1,6,2,1];
             _nextTowerLevel = uint8(_RandNumb(_deRand,80,61));
         } else if (TowerLevel <= 80 ) { //level4 stage 2
             _TowerPet.species = 16;
             _TowerPet.power.hitpoints = 70000+((TowerLevel*1900)%70000);
-            _TowerPet.power.strength = 100+((TowerLevel*75)%100);
-            _TowerPet.power.agility = 100+((TowerLevel*88)%100);
-            _TowerPet.power.intellegence = 120+((TowerLevel*33)%120);
+            _TowerPet.power.strength = uint16(100+((TowerLevel*75)%100));
+            _TowerPet.power.agility = uint16(100+((TowerLevel*88)%100));
+            _TowerPet.power.intellegence = uint16(120+((TowerLevel*33)%120));
             _TowerPet.skill = [16,0,0]; 
             _chances = [1,6,2,1];
             _nextTowerLevel = uint8(_RandNumb(_deRand,100,81));
         } else if (TowerLevel <= 100 ) { //level5 stage 2
             _TowerPet.species = 17;
             _TowerPet.power.hitpoints = 100000+((TowerLevel*1900)%70000);
-            _TowerPet.power.strength = 150+((TowerLevel*75)%100);
-            _TowerPet.power.agility = 150+((TowerLevel*88)%100);
-            _TowerPet.power.intellegence = 180+((TowerLevel*33)%120);
+            _TowerPet.power.strength = uint16(150+((TowerLevel*75)%100));
+            _TowerPet.power.agility = uint16(150+((TowerLevel*88)%100));
+            _TowerPet.power.intellegence = uint16(180+((TowerLevel*33)%120));
             _TowerPet.skill = [17,0,0]; 
             _chances = [1,5,3,1];
             _nextTowerLevel = uint8(_RandNumb(_deRand,120,101));
         } else if (TowerLevel <= 120 ) { //level6 stage 3
             _TowerPet.species = 23;
             _TowerPet.power.hitpoints = 250000+((TowerLevel*1900)%130000);
-            _TowerPet.power.strength = 220+((TowerLevel*75)%100);
-            _TowerPet.power.agility = 220+((TowerLevel*88)%100);
-            _TowerPet.power.intellegence = 350+((TowerLevel*33)%120);
+            _TowerPet.power.strength = uint16(220+((TowerLevel*75)%100));
+            _TowerPet.power.agility = uint16(220+((TowerLevel*88)%100));
+            _TowerPet.power.intellegence = uint16(350+((TowerLevel*33)%120));
             _TowerPet.skill = [10,23,0]; 
             _chances = [0,5,4,1];
             _nextTowerLevel = uint8(_RandNumb(_deRand,140,121));
         } else if (TowerLevel <= 140 ) { //level7 stage 3
             _TowerPet.species = 30;
             _TowerPet.power.hitpoints = 350000+((TowerLevel*1900)%170000);
-            _TowerPet.power.strength = 350+((TowerLevel*75)%100);
-            _TowerPet.power.agility = 350+((TowerLevel*88)%100);
-            _TowerPet.power.intellegence = 550+((TowerLevel*33)%120);
+            _TowerPet.power.strength = uint16(350+((TowerLevel*75)%100));
+            _TowerPet.power.agility = uint16(350+((TowerLevel*88)%100));
+            _TowerPet.power.intellegence = uint16(550+((TowerLevel*33)%120));
             _TowerPet.skill = [16,30,0];
             _chances = [0,4,4,2]; 
             _nextTowerLevel = uint8(_RandNumb(_deRand,160,141));
         } else if (TowerLevel <= 160 ) { //level8 stage 3
             _TowerPet.species = 37;
             _TowerPet.power.hitpoints = 450000+((TowerLevel*1900)%270000);
-            _TowerPet.power.strength = 450+((TowerLevel*75)%150);
-            _TowerPet.power.agility = 450+((TowerLevel*88)%150);
-            _TowerPet.power.intellegence = 660+((TowerLevel*33)%120);
+            _TowerPet.power.strength = uint16(450+((TowerLevel*75)%150));
+            _TowerPet.power.agility = uint16(450+((TowerLevel*88)%150));
+            _TowerPet.power.intellegence = uint16(660+((TowerLevel*33)%120));
             _TowerPet.skill = [17,37,0]; 
             _chances = [0,1,6,3];
             _nextTowerLevel = uint8(_RandNumb(_deRand,180,161));
         } else if (TowerLevel <= 180 ) { //level9 stage 4
             _TowerPet.species = 44;
             _TowerPet.power.hitpoints = 600000+((TowerLevel*1900)%300000);
-            _TowerPet.power.strength = 600+((TowerLevel*75)%150);
-            _TowerPet.power.agility = 600+((TowerLevel*88)%150);
-            _TowerPet.power.intellegence = 730+((TowerLevel*33)%120);
+            _TowerPet.power.strength = uint16(600+((TowerLevel*75)%150));
+            _TowerPet.power.agility = uint16(600+((TowerLevel*88)%150));
+            _TowerPet.power.intellegence = uint16(730+((TowerLevel*33)%120));
             _TowerPet.skill = [10,23,44]; 
             _chances = [0,0,5,5];
             _nextTowerLevel = uint8(_RandNumb(_deRand,200,181));
         } else if (TowerLevel <= 200 ) { //level10 stage 4
             _TowerPet.species = 54;
             _TowerPet.power.hitpoints = 900000+((TowerLevel*1900)%100000);
-            _TowerPet.power.strength = 900+((TowerLevel*75)%100);
-            _TowerPet.power.agility = 900+((TowerLevel*88)%100);
-            _TowerPet.power.intellegence = 900+((TowerLevel*33)%100);
+            _TowerPet.power.strength = uint16(900+((TowerLevel*75)%100));
+            _TowerPet.power.agility = uint16(900+((TowerLevel*88)%100));
+            _TowerPet.power.intellegence = uint16(900+((TowerLevel*33)%100));
             _TowerPet.skill = [17,37,54]; 
             _chances = [0,0,0,10];
             _nextTowerLevel = uint8(_RandNumb(_deRand,20,1));
