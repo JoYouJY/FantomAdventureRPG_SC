@@ -82,8 +82,8 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     // 21 to 40 is level two, and so on. to 181 to 200 for level 10. 
     mapping (address => uint8) public TowerLevel; 
     mapping (address => uint32) public TowerResetCd; 
-    mapping (address => uint8) public DailyMaxReward;
-    mapping (address => uint64) public RewardLimitTimer;
+    mapping (uint => uint8) public DailyMaxReward;
+    mapping (uint => uint64) public RewardLimitTimer;
     A.Pets[MAX_MINTABLE] public Pet;
 
     // artifact contract, that can be used to reward players from this contract
@@ -178,13 +178,13 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         if (_rank >3 && Mon1Win == true) {
         TowerLevel[msg.sender] = _nextTowerLevel; //win go to next
         //Give reward with chances if win here!
-            if (DailyMaxReward[msg.sender] > 0) { //reach reward limit?
+            if (DailyMaxReward[_id] > 0) { //reach reward limit?
                 ArtifactContract.rewardSystem(_chances, msg.sender, rand);
-                DailyMaxReward[msg.sender] = DailyMaxReward[msg.sender] -1;
-            } else if( _timenow - RewardLimitTimer[msg.sender] > 82800 ) {//23hours //help reset limit and use it
+                DailyMaxReward[_id] = DailyMaxReward[_id] -1;
+            } else if( _timenow - RewardLimitTimer[_id] > 82800 ) {//23hours //help reset limit and use it
                 ArtifactContract.rewardSystem(_chances, msg.sender, rand);
-                DailyMaxReward[msg.sender] = 9;
-                RewardLimitTimer[msg.sender] = _timenow;
+                DailyMaxReward[_id] = 9;
+                RewardLimitTimer[_id] = _timenow;
             } //otherwise, no reward.
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
@@ -280,16 +280,16 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     function viewTowerMonster(address _owner) public view returns (A.Pets memory APet, uint8[4] memory _chances){
         (APet,_chances,) = core.TowerPet(TowerLevel[_owner],0);
     }
-    function DailyRewardLimit (address _owner) public view returns(uint8 Limit, uint64 resettimer) {
-        if (DailyMaxReward[msg.sender] > 0) {
-                Limit = DailyMaxReward[_owner];
-                resettimer = RewardLimitTimer[_owner];
-            } else if( block.timestamp - RewardLimitTimer[msg.sender] > 82800 ) {//23hours
+    function DailyRewardLimit (uint _id) public view returns(uint8 Limit, uint64 resettimer) {
+        if (DailyMaxReward[_id] > 0) {
+                Limit = DailyMaxReward[_id];
+                resettimer = RewardLimitTimer[_id];
+            } else if( block.timestamp - RewardLimitTimer[_id] > 82800 ) {//23hours
                 Limit = 10;
                 resettimer = uint64(block.timestamp);
             } else {
-                Limit = DailyMaxReward[_owner];
-                resettimer = RewardLimitTimer[_owner];
+                Limit = DailyMaxReward[_id];
+                resettimer = RewardLimitTimer[_id];
             }
     }
 //--------------------------------------
