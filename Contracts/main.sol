@@ -164,28 +164,28 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         uint8 bit; // how many bit has been filled for Rythm
         uint64 damage; //dealt total damage to Mon2
         uint8[4] memory _chances;
+        uint8 _nextTowerLevel;
         uint rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp)));
         A.Pets memory BattlingPet;
-        
         if (_rank <= 3) { //tag along with Mon1Win to reduce stack
             BattlingPet = core.battlingPet(_rank,rand);
         } else {
-            require(TowerLevel[msg.sender] > 0, "TowerLevel0");
-            (BattlingPet,_chances) = core.TowerPet(TowerLevel[msg.sender]);
+            require(TowerLevel[msg.sender] > 0, "TowerLevel 0");
+            (BattlingPet,_chances,_nextTowerLevel) = core.TowerPet(TowerLevel[msg.sender], rand);
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
         
         if (_rank >3 && Mon1Win == true) {
+        TowerLevel[msg.sender] = _nextTowerLevel; //win go to next
         //Give reward with chances if win here!
-            if (DailyMaxReward[msg.sender] > 0) {
+            if (DailyMaxReward[msg.sender] > 0) { //reach reward limit?
                 ArtifactContract.rewardSystem(_chances, msg.sender, rand);
                 DailyMaxReward[msg.sender] = DailyMaxReward[msg.sender] -1;
-            } else if( _timenow - RewardLimitTimer[msg.sender] > 82800 ) {//23hours
+            } else if( _timenow - RewardLimitTimer[msg.sender] > 82800 ) {//23hours //help reset limit and use it
                 ArtifactContract.rewardSystem(_chances, msg.sender, rand);
                 DailyMaxReward[msg.sender] = 9;
                 RewardLimitTimer[msg.sender] = _timenow;
-            }
-            
+            } //otherwise, no reward.
         }
         (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
         Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank); //exp stars gain   
@@ -193,6 +193,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         emit Result(_id, Mon1Win, BattleRhythm, Pet[_id], BattlingPet,damage, bit); //done battle
         
     }
+    
     function resetTowerLevel() public {
         if (block.timestamp - TowerResetCd[msg.sender] > 50) { //50s cooldown for reset the level to prevent spam
             TowerLevel[msg.sender] = (uint8(uint(keccak256(abi.encodePacked(msg.sender, block.timestamp,block.coinbase))))%20)+1;
@@ -277,7 +278,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         return Meta.buildURIbased64(Pet[tokenId],imageURL, imageExtension,uint64(block.timestamp),namebyID);
     } //I wish Marketplaces able to comply to this...
     function viewTowerMonster(address _owner) public view returns (A.Pets memory APet, uint8[4] memory _chances){
-        (APet,_chances) = core.TowerPet(TowerLevel[_owner]);
+        (APet,_chances,) = core.TowerPet(TowerLevel[_owner],0);
     }
     function DailyRewardLimit (address _owner) public view returns(uint8 Limit, uint64 resettimer) {
         if (DailyMaxReward[msg.sender] > 0) {
