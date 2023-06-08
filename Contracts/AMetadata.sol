@@ -71,68 +71,69 @@ library AMeta {
         }
     } 
     function _getAMbyID(uint16 _id) private pure returns (Ar.ArtifactsMetadata memory AM){
+        string memory itemDescription = "Multiplier: The strength of this item is determined by the number of duplicate artifacts you have equipped. Your current multiplier value is based on the quantity of duplicate artifacts:\n\n- 1 or more duplicates: Multiplier: 1\n- 2 or more duplicates: Multiplier: 2\n- 4 or more duplicates: Multiplier: 3\n- 8 or more duplicates: Multiplier: 4\n- 16 or more duplicates: Multiplier: 5\n- 32 or more duplicates: Multiplier: 6\n- 64 or more duplicates: Multiplier: 7\n- 128 or more duplicates: Multiplier: 8\n- 256 or more duplicates: Multiplier: 9\n\nThe higher your multiplier, the more potent the effects of this item. Accumulate more duplicate artifacts to increase your multiplier and enhance your gameplay performance.";
         if (_id == 0) {
             AM = Ar.ArtifactsMetadata("Gold", "A rare and precious resource, holds immense value in the realm. Its utility and purpose are yet to be discovered, waiting to unlock hidden secrets and potential within the world.", 0);
         } else if (_id == 1) {
-            AM = Ar.ArtifactsMetadata("Shadow Hood", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Shadow Hood", itemDescription, 1);
         } else if (_id == 2) {
-            AM = Ar.ArtifactsMetadata("Serene Crown", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Serene Crown", itemDescription, 1);
         } else if (_id == 3) {
-            AM = Ar.ArtifactsMetadata("Emberwrap", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Emberwrap", itemDescription, 1);
         } else if (_id == 4) {
-            AM = Ar.ArtifactsMetadata("Star Bandana", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Star Bandana", itemDescription, 1);
         } else if (_id == 5) {
-            AM = Ar.ArtifactsMetadata("Thunder Cap", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Thunder Cap", itemDescription, 1);
         } else if (_id == 6) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Visage", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Sentinel's Visage", itemDescription, 1);
         } else if (_id == 7) {
-            AM = Ar.ArtifactsMetadata("Aurora Helm", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Aurora Helm", itemDescription, 1);
         } else if (_id == 8) {
-            AM = Ar.ArtifactsMetadata("Stormforged Helmet", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Stormforged Helmet", itemDescription, 1);
         } else if (_id == 9) {
-            AM = Ar.ArtifactsMetadata("Veil of Eternity", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Veil of Eternity", itemDescription, 1);
         } else if (_id == 10) {
-            AM = Ar.ArtifactsMetadata("Celestial Crown", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Celestial Crown", itemDescription, 1);
         } else if (_id == 11) {
-            AM = Ar.ArtifactsMetadata("Shadowweave Tunic", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Shadowweave Tunic", itemDescription, 2);
         } else if (_id == 12) {
-            AM = Ar.ArtifactsMetadata("Flamestrike Robes", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Flamestrike Robes", itemDescription, 2);
         } else if (_id == 13) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Armor", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Crystal Shard Armor", itemDescription, 2);
         } else if (_id == 14) {
-            AM = Ar.ArtifactsMetadata("Starfall Cloak", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Starfall Cloak", itemDescription, 2);
         } else if (_id == 15) {
-            AM = Ar.ArtifactsMetadata("Thunderstep Vestments", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Thunderstep Vestments", itemDescription, 2);
         } else if (_id == 16) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Regalia", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Sentinel's Regalia", itemDescription, 2);
         } else if (_id == 17) {
-            AM = Ar.ArtifactsMetadata("Lunar Shroud", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Lunar Shroud", itemDescription, 2);
         } else if (_id == 18) {
-            AM = Ar.ArtifactsMetadata("Stormguard Plate", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Stormguard Plate", itemDescription, 2);
         } else if (_id == 19) {
-            AM = Ar.ArtifactsMetadata("Eternity Robes", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Eternity Robes", itemDescription, 2);
         } else if (_id == 20) {
-            AM = Ar.ArtifactsMetadata("Celestial Attire", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Celestial Attire", itemDescription, 2);
         } else if (_id == 21) {
-            AM = Ar.ArtifactsMetadata("Shadowfire Orb", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Shadowfire Orb", itemDescription, 3);
         } else if (_id == 22) {
-            AM = Ar.ArtifactsMetadata("Arcane Sphere", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Arcane Sphere", itemDescription, 3);
         } else if (_id == 23) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Core", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Crystal Shard Core", itemDescription, 3);
         } else if (_id == 24) {
-            AM = Ar.ArtifactsMetadata("Starlight Globe", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Starlight Globe", itemDescription, 3);
         } else if (_id == 25) {
-            AM = Ar.ArtifactsMetadata("Thunderstrike Sphere", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Thunderstrike Sphere", itemDescription, 3);
         } else if (_id == 26) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Radiance", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Sentinel's Radiance", itemDescription, 3);
         } else if (_id == 27) {
-            AM = Ar.ArtifactsMetadata("Lunar Essence", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Lunar Essence", itemDescription, 3);
         } else if (_id == 28) {
-            AM = Ar.ArtifactsMetadata("Stormforged Orb", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Stormforged Orb", itemDescription, 3);
         } else if (_id == 29) {
-            AM = Ar.ArtifactsMetadata("Eternity's Nexus", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Eternity's Nexus", itemDescription, 3);
         } else if (_id == 30) {
-            AM = Ar.ArtifactsMetadata("Celestial Orb", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Celestial Orb", itemDescription, 3);
         }   
     } 
     function getAEbyID(uint16 _id) external pure returns (Ar.ArtifactsEffects memory AE){
@@ -201,68 +202,69 @@ library AMeta {
         }
     } 
     function getAMbyID(uint16 _id) external pure returns (Ar.ArtifactsMetadata memory AM){
+        string memory itemDescription = "Multiplier: The strength of this item is determined by the number of duplicate artifacts you have equipped. Your current multiplier value is based on the quantity of duplicate artifacts:\n\n- 1 or more duplicates: Multiplier: 1\n- 2 or more duplicates: Multiplier: 2\n- 4 or more duplicates: Multiplier: 3\n- 8 or more duplicates: Multiplier: 4\n- 16 or more duplicates: Multiplier: 5\n- 32 or more duplicates: Multiplier: 6\n- 64 or more duplicates: Multiplier: 7\n- 128 or more duplicates: Multiplier: 8\n- 256 or more duplicates: Multiplier: 9\n\nThe higher your multiplier, the more potent the effects of this item. Accumulate more duplicate artifacts to increase your multiplier and enhance your gameplay performance.";
         if (_id == 0) {
             AM = Ar.ArtifactsMetadata("Gold", "A rare and precious resource, holds immense value in the realm. Its utility and purpose are yet to be discovered, waiting to unlock hidden secrets and potential within the world.", 0);
         } else if (_id == 1) {
-            AM = Ar.ArtifactsMetadata("Shadow Hood", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Shadow Hood", itemDescription, 1);
         } else if (_id == 2) {
-            AM = Ar.ArtifactsMetadata("Serene Crown", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Serene Crown", itemDescription, 1);
         } else if (_id == 3) {
-            AM = Ar.ArtifactsMetadata("Emberwrap", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Emberwrap", itemDescription, 1);
         } else if (_id == 4) {
-            AM = Ar.ArtifactsMetadata("Star Bandana", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Star Bandana", itemDescription, 1);
         } else if (_id == 5) {
-            AM = Ar.ArtifactsMetadata("Thunder Cap", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Thunder Cap", itemDescription, 1);
         } else if (_id == 6) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Visage", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Sentinel's Visage", itemDescription, 1);
         } else if (_id == 7) {
-            AM = Ar.ArtifactsMetadata("Aurora Helm", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Aurora Helm", itemDescription, 1);
         } else if (_id == 8) {
-            AM = Ar.ArtifactsMetadata("Stormforged Helmet", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Stormforged Helmet", itemDescription, 1);
         } else if (_id == 9) {
-            AM = Ar.ArtifactsMetadata("Veil of Eternity", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Veil of Eternity", itemDescription, 1);
         } else if (_id == 10) {
-            AM = Ar.ArtifactsMetadata("Celestial Crown", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 1);
+            AM = Ar.ArtifactsMetadata("Celestial Crown", itemDescription, 1);
         } else if (_id == 11) {
-            AM = Ar.ArtifactsMetadata("Shadowweave Tunic", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Shadowweave Tunic", itemDescription, 2);
         } else if (_id == 12) {
-            AM = Ar.ArtifactsMetadata("Flamestrike Robes", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Flamestrike Robes", itemDescription, 2);
         } else if (_id == 13) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Armor", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Crystal Shard Armor", itemDescription, 2);
         } else if (_id == 14) {
-            AM = Ar.ArtifactsMetadata("Starfall Cloak", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Starfall Cloak", itemDescription, 2);
         } else if (_id == 15) {
-            AM = Ar.ArtifactsMetadata("Thunderstep Vestments", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Thunderstep Vestments", itemDescription, 2);
         } else if (_id == 16) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Regalia", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Sentinel's Regalia", itemDescription, 2);
         } else if (_id == 17) {
-            AM = Ar.ArtifactsMetadata("Lunar Shroud", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Lunar Shroud", itemDescription, 2);
         } else if (_id == 18) {
-            AM = Ar.ArtifactsMetadata("Stormguard Plate", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Stormguard Plate", itemDescription, 2);
         } else if (_id == 19) {
-            AM = Ar.ArtifactsMetadata("Eternity Robes", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Eternity Robes", itemDescription, 2);
         } else if (_id == 20) {
-            AM = Ar.ArtifactsMetadata("Celestial Attire", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 2);
+            AM = Ar.ArtifactsMetadata("Celestial Attire", itemDescription, 2);
         } else if (_id == 21) {
-            AM = Ar.ArtifactsMetadata("Shadowfire Orb", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Shadowfire Orb", itemDescription, 3);
         } else if (_id == 22) {
-            AM = Ar.ArtifactsMetadata("Arcane Sphere", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Arcane Sphere", itemDescription, 3);
         } else if (_id == 23) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Core", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Crystal Shard Core", itemDescription, 3);
         } else if (_id == 24) {
-            AM = Ar.ArtifactsMetadata("Starlight Globe", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Starlight Globe", itemDescription, 3);
         } else if (_id == 25) {
-            AM = Ar.ArtifactsMetadata("Thunderstrike Sphere", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Thunderstrike Sphere", itemDescription, 3);
         } else if (_id == 26) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Radiance", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Sentinel's Radiance", itemDescription, 3);
         } else if (_id == 27) {
-            AM = Ar.ArtifactsMetadata("Lunar Essence", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Lunar Essence", itemDescription, 3);
         } else if (_id == 28) {
-            AM = Ar.ArtifactsMetadata("Stormforged Orb", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Stormforged Orb", itemDescription, 3);
         } else if (_id == 29) {
-            AM = Ar.ArtifactsMetadata("Eternity's Nexus", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Eternity's Nexus", itemDescription, 3);
         } else if (_id == 30) {
-            AM = Ar.ArtifactsMetadata("Celestial Orb", "Collecting more duplicates increases the multiplier, amplifying the item's power. [Integer Multiplier = 2^(Balance-1); Max=9]", 3);
+            AM = Ar.ArtifactsMetadata("Celestial Orb", itemDescription, 3);
         }   
     } 
     function getSlotbyID(uint8 _id) external pure returns (uint8 slot){
