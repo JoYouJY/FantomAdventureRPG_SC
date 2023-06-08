@@ -132,7 +132,7 @@ library Meta {
  //               \"trait_type\": \"Status\",\"value\": \"",bytes(_status),   //cut feature due to time line for hackathon
  //           "\"}, {\"trait_type\": \"Shinning\",\"value\": \"",bytes(_shinning),   //cut feature due to time line for hackathon
  //           "\"}, {
-                
+             "\"}, {\"trait_type\": \"'Species\",\"value\": \"",_toString(_Pet.species),   
             "\"}, {\"trait_type\": \"'Family\",\"value\": \"",_getFamily(_Pet.family),   //cut feature due to time line for hackathon
             "\"}, {\"trait_type\": \"_Endurance\",\"value\": \"",_getDayHrsMin(_endurance),
             "\"}, {\"trait_type\": \"_Stamina\",\"value\": \"",_getDayHrsMin(_stamina)
