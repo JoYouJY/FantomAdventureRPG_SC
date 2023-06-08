@@ -28,6 +28,7 @@ interface IERC2981 is IERC165 {
 
 interface ContractArtifactInterface {
     function rewardSystem (uint8[4] calldata , address , uint) external;
+    function getEquipedArtifactsEffects(address) external view returns (uint32[4] memory);
 }
 
 
@@ -151,46 +152,60 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         Pet[_id] = core.trainPet(Pet[_id], _trainingtype,ownerOf(_id)); //requirement check on lib
         emit StatChangedResult(Pet[_id]);
     }
-
+    struct cc {
+        uint8[4] _chances; 
+        uint32[4] ABCD;
+        uint BattleRhythm;
+        uint64 damage; //dealt total damage to Mon2
+         uint8 bit; // how many bit has been filled for Rythm
+    }
     function BattlePet(uint _id, uint8 _rank) public {
         //_rank 0~3 is AI based on self CP. 
         //_rank 4 = mysterious tower has 10 level.
+        A.Pets memory OwnerPet = Pet[_id];
         uint64 _timenow = uint64(block.timestamp);
         require(msg.sender == ownerOf(_id)  &&
-                _timenow - Pet[_id].time.stamina >= BATTLESTAMINA && 
-                Pet[_id].time.deadtime > _timenow && Pet[_id].time.endurance > _timenow ); //Alive
+                _timenow - OwnerPet.time.stamina >= BATTLESTAMINA && 
+                OwnerPet.time.deadtime > _timenow && OwnerPet.time.endurance > _timenow ); //Alive
         bool Mon1Win;
-        uint BattleRhythm;
-        uint8 bit; // how many bit has been filled for Rythm
-        uint64 damage; //dealt total damage to Mon2
-        uint8[4] memory _chances;
+        cc memory C;
+ //       uint BattleRhythm;
+ //       uint8 bit; // how many bit has been filled for Rythm
+ //       uint64 damage; //dealt total damage to Mon2
+ //       uint8[4] memory _chances;
+ //       uint32[4] memory ABCD;
         uint8 _nextTowerLevel;
         uint rand = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp)));
         A.Pets memory BattlingPet;
+        C.ABCD = ArtifactContract.getEquipedArtifactsEffects(msg.sender);
         if (_rank <= 3) { //tag along with Mon1Win to reduce stack
             BattlingPet = core.battlingPet(_rank,rand);
         } else {
             require(TowerLevel[msg.sender] > 0, "TowerLevel 0");
-            (BattlingPet,_chances,_nextTowerLevel) = core.TowerPet(TowerLevel[msg.sender], rand);
+            (BattlingPet,C._chances,_nextTowerLevel) = core.TowerPet(TowerLevel[msg.sender], rand);
         }
-        (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
+        OwnerPet.power.hitpoints = OwnerPet.power.hitpoints + C.ABCD[0];
+        OwnerPet.power.strength = OwnerPet.power.strength + uint16(C.ABCD[1]);
+        OwnerPet.power.agility = OwnerPet.power.agility + uint16(C.ABCD[2]);
+        OwnerPet.power.intellegence = OwnerPet.power.intellegence;   uint16(C.ABCD[3]);
+        (Mon1Win,C.BattleRhythm, C.bit, C.damage) = core.battlePet(rand, OwnerPet, BattlingPet);
         
         if (_rank >3 && Mon1Win == true) {
         TowerLevel[msg.sender] = _nextTowerLevel; //win go to next
         //Give reward with chances if win here!
             if (DailyMaxReward[_id] > 0) { //reach reward limit?
-                ArtifactContract.rewardSystem(_chances, msg.sender, rand);
+                ArtifactContract.rewardSystem(C._chances, msg.sender, rand);
                 DailyMaxReward[_id] = DailyMaxReward[_id] -1;
             } else if( _timenow - RewardLimitTimer[_id] > 82800 ) {//23hours //help reset limit and use it
-                ArtifactContract.rewardSystem(_chances, msg.sender, rand);
+                ArtifactContract.rewardSystem(C._chances, msg.sender, rand);
                 DailyMaxReward[_id] = 9;
                 RewardLimitTimer[_id] = _timenow;
             } //otherwise, no reward.
         }
-        (Mon1Win,BattleRhythm, bit, damage) = core.battlePet(rand, Pet[_id], BattlingPet);
+        (Mon1Win,C.BattleRhythm, C.bit, C.damage) = core.battlePet(rand, Pet[_id], BattlingPet);
         Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank); //exp stars gain   
         Pet[_id].time.stamina += BATTLESTAMINA; // take up stamina
-        emit Result(_id, Mon1Win, BattleRhythm, Pet[_id], BattlingPet,damage, bit); //done battle
+        emit Result(_id, Mon1Win, C.BattleRhythm, Pet[_id], BattlingPet,C.damage, C.bit); //done battle
         
     }
     
