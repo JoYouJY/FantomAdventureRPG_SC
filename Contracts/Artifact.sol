@@ -33,9 +33,10 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
     string public name = "FantomAdventureRPG Artifact";
     string public symbol = "aFARPG";
     bool public confirmed = false;
+    bool public stopgen = false;
     string public constant baseUri = "ipfs://";
-    string public imageExtension = ".jpg";
-    string public imageURL = "https://ipfs.io/ipfs/QmU9ErbrZsECw9JdGpEn4wsVkMeKRrDqhCxYy1A6mzMpAy/";
+    string public imageExtension = ".png";
+    string public imageURL = "https://ipfs.io/ipfs/QmY2LxnJbFe2e3BeHfsziNxsnube1oGNQaFLPfJnqeqUYh/";
     bool public _namebyID = true; //indicate where it needs to have ID 123 on name
   
     
@@ -372,14 +373,22 @@ contract FARPGartifacts is IERC2981, ERC1155, Ownable {
         }
         return bstr;
     }
-    //------------BETA CHEATING TEST -------------
+    //------------Hackathon Generation -------------
+    //Will renowed when submitting to Open Marketplace for fairness
     function cheatArtifact(address _player, uint _id, uint _amount) public {
-         mint(_amount,_player,_id); 
+         if (stopgen == false) {
+            mint(_amount,_player,_id); 
+         }
     }
     function cheatAllArtifact(address _player, uint _amount) public {
-         for (uint i = 0; i < 31; i++) {
-            mint(_amount,_player,i); 
+         if (stopgen == false) {
+            for (uint i = 0; i < 31; i++) {
+                mint(_amount,_player,i); 
+            }
          }
+    }
+    function renowGenArtifactforHackathon() public {
+         stopgen = true;
     }
  
 }
