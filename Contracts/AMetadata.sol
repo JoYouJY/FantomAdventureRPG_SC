@@ -75,66 +75,67 @@ library AMeta {
         if (_id == 0) {
             AM = Ar.ArtifactsMetadata("Gold", "A rare and precious resource, holds immense value in the realm. Its utility and purpose are yet to be discovered, waiting to unlock hidden secrets and potential within the world.", 0);
         } else if (_id == 1) {
-            AM = Ar.ArtifactsMetadata("Shadow Hood", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Ruby Ribbon", itemDescription, 1);
         } else if (_id == 2) {
-            AM = Ar.ArtifactsMetadata("Serene Crown", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Lily Elegance", itemDescription, 1);
         } else if (_id == 3) {
-            AM = Ar.ArtifactsMetadata("Emberwrap", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Faux Fecal", itemDescription, 1);
         } else if (_id == 4) {
-            AM = Ar.ArtifactsMetadata("Star Bandana", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Pearl Petal", itemDescription, 1);
         } else if (_id == 5) {
-            AM = Ar.ArtifactsMetadata("Thunder Cap", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Breezeleaf", itemDescription, 1);
         } else if (_id == 6) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Visage", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Whisker Wonderland", itemDescription, 1);
         } else if (_id == 7) {
-            AM = Ar.ArtifactsMetadata("Aurora Helm", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Featherflight", itemDescription, 1);
         } else if (_id == 8) {
-            AM = Ar.ArtifactsMetadata("Stormforged Helmet", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Purrfect Pinnacles", itemDescription, 1);
         } else if (_id == 9) {
-            AM = Ar.ArtifactsMetadata("Veil of Eternity", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Twilight Flicker", itemDescription, 1);
         } else if (_id == 10) {
-            AM = Ar.ArtifactsMetadata("Celestial Crown", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Celestial Halo", itemDescription, 1);
         } else if (_id == 11) {
-            AM = Ar.ArtifactsMetadata("Shadowweave Tunic", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - R", itemDescription, 2);
         } else if (_id == 12) {
-            AM = Ar.ArtifactsMetadata("Flamestrike Robes", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - Y", itemDescription, 2);
         } else if (_id == 13) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Armor", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - B", itemDescription, 2);
         } else if (_id == 14) {
-            AM = Ar.ArtifactsMetadata("Starfall Cloak", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - G", itemDescription, 2);
         } else if (_id == 15) {
-            AM = Ar.ArtifactsMetadata("Thunderstep Vestments", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - C", itemDescription, 2);
         } else if (_id == 16) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Regalia", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Love Embrace - C", itemDescription, 2);
         } else if (_id == 17) {
-            AM = Ar.ArtifactsMetadata("Lunar Shroud", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Love Embrace - P", itemDescription, 2);
         } else if (_id == 18) {
-            AM = Ar.ArtifactsMetadata("Stormguard Plate", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Love Embrace - G", itemDescription, 2);
         } else if (_id == 19) {
-            AM = Ar.ArtifactsMetadata("Eternity Robes", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Celestial Harmony - X", itemDescription, 2);
         } else if (_id == 20) {
-            AM = Ar.ArtifactsMetadata("Celestial Attire", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Celestial Harmony - Y", itemDescription, 2);
         } else if (_id == 21) {
-            AM = Ar.ArtifactsMetadata("Shadowfire Orb", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Hex", itemDescription, 3);
         } else if (_id == 22) {
-            AM = Ar.ArtifactsMetadata("Arcane Sphere", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Trix", itemDescription, 3);
         } else if (_id == 23) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Core", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Loid", itemDescription, 3);
         } else if (_id == 24) {
-            AM = Ar.ArtifactsMetadata("Starlight Globe", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Volt", itemDescription, 3);
         } else if (_id == 25) {
-            AM = Ar.ArtifactsMetadata("Thunderstrike Sphere", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Blaze", itemDescription, 3);
         } else if (_id == 26) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Radiance", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("AeroBot Ion", itemDescription, 3);
         } else if (_id == 27) {
-            AM = Ar.ArtifactsMetadata("Lunar Essence", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("AeroBot Byte", itemDescription, 3);
         } else if (_id == 28) {
-            AM = Ar.ArtifactsMetadata("Stormforged Orb", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("AeroBot Techno", itemDescription, 3);
         } else if (_id == 29) {
-            AM = Ar.ArtifactsMetadata("Eternity's Nexus", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Floatron Core", itemDescription, 3);
         } else if (_id == 30) {
-            AM = Ar.ArtifactsMetadata("Celestial Orb", itemDescription, 3);
-        }   
+            AM = Ar.ArtifactsMetadata("Floatron Pyro", itemDescription, 3);
+        }
+
     } 
     function getAEbyID(uint16 _id) external pure returns (Ar.ArtifactsEffects memory AE){
         if (_id == 0) {
@@ -206,66 +207,66 @@ library AMeta {
         if (_id == 0) {
             AM = Ar.ArtifactsMetadata("Gold", "A rare and precious resource, holds immense value in the realm. Its utility and purpose are yet to be discovered, waiting to unlock hidden secrets and potential within the world.", 0);
         } else if (_id == 1) {
-            AM = Ar.ArtifactsMetadata("Shadow Hood", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Ruby Ribbon", itemDescription, 1);
         } else if (_id == 2) {
-            AM = Ar.ArtifactsMetadata("Serene Crown", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Lily Elegance", itemDescription, 1);
         } else if (_id == 3) {
-            AM = Ar.ArtifactsMetadata("Emberwrap", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Faux Fecal", itemDescription, 1);
         } else if (_id == 4) {
-            AM = Ar.ArtifactsMetadata("Star Bandana", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Pearl Petal", itemDescription, 1);
         } else if (_id == 5) {
-            AM = Ar.ArtifactsMetadata("Thunder Cap", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Breezeleaf", itemDescription, 1);
         } else if (_id == 6) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Visage", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Whisker Wonderland", itemDescription, 1);
         } else if (_id == 7) {
-            AM = Ar.ArtifactsMetadata("Aurora Helm", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Featherflight", itemDescription, 1);
         } else if (_id == 8) {
-            AM = Ar.ArtifactsMetadata("Stormforged Helmet", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Purrfect Pinnacles", itemDescription, 1);
         } else if (_id == 9) {
-            AM = Ar.ArtifactsMetadata("Veil of Eternity", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Twilight Flicker", itemDescription, 1);
         } else if (_id == 10) {
-            AM = Ar.ArtifactsMetadata("Celestial Crown", itemDescription, 1);
+            AM = Ar.ArtifactsMetadata("Celestial Halo", itemDescription, 1);
         } else if (_id == 11) {
-            AM = Ar.ArtifactsMetadata("Shadowweave Tunic", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - R", itemDescription, 2);
         } else if (_id == 12) {
-            AM = Ar.ArtifactsMetadata("Flamestrike Robes", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - Y", itemDescription, 2);
         } else if (_id == 13) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Armor", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - B", itemDescription, 2);
         } else if (_id == 14) {
-            AM = Ar.ArtifactsMetadata("Starfall Cloak", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - G", itemDescription, 2);
         } else if (_id == 15) {
-            AM = Ar.ArtifactsMetadata("Thunderstep Vestments", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Scholar - C", itemDescription, 2);
         } else if (_id == 16) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Regalia", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Love Embrace - C", itemDescription, 2);
         } else if (_id == 17) {
-            AM = Ar.ArtifactsMetadata("Lunar Shroud", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Love Embrace - P", itemDescription, 2);
         } else if (_id == 18) {
-            AM = Ar.ArtifactsMetadata("Stormguard Plate", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Love Embrace - G", itemDescription, 2);
         } else if (_id == 19) {
-            AM = Ar.ArtifactsMetadata("Eternity Robes", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Celestial Harmony - X", itemDescription, 2);
         } else if (_id == 20) {
-            AM = Ar.ArtifactsMetadata("Celestial Attire", itemDescription, 2);
+            AM = Ar.ArtifactsMetadata("Celestial Harmony - Y", itemDescription, 2);
         } else if (_id == 21) {
-            AM = Ar.ArtifactsMetadata("Shadowfire Orb", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Hex", itemDescription, 3);
         } else if (_id == 22) {
-            AM = Ar.ArtifactsMetadata("Arcane Sphere", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Trix", itemDescription, 3);
         } else if (_id == 23) {
-            AM = Ar.ArtifactsMetadata("Crystal Shard Core", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Loid", itemDescription, 3);
         } else if (_id == 24) {
-            AM = Ar.ArtifactsMetadata("Starlight Globe", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Volt", itemDescription, 3);
         } else if (_id == 25) {
-            AM = Ar.ArtifactsMetadata("Thunderstrike Sphere", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Orbito Blaze", itemDescription, 3);
         } else if (_id == 26) {
-            AM = Ar.ArtifactsMetadata("Sentinel's Radiance", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("AeroBot Ion", itemDescription, 3);
         } else if (_id == 27) {
-            AM = Ar.ArtifactsMetadata("Lunar Essence", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("AeroBot Byte", itemDescription, 3);
         } else if (_id == 28) {
-            AM = Ar.ArtifactsMetadata("Stormforged Orb", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("AeroBot Techno", itemDescription, 3);
         } else if (_id == 29) {
-            AM = Ar.ArtifactsMetadata("Eternity's Nexus", itemDescription, 3);
+            AM = Ar.ArtifactsMetadata("Floatron Core", itemDescription, 3);
         } else if (_id == 30) {
-            AM = Ar.ArtifactsMetadata("Celestial Orb", itemDescription, 3);
-        }   
+            AM = Ar.ArtifactsMetadata("Floatron Pyro", itemDescription, 3);
+        }
     } 
     function getSlotbyID(uint8 _id) external pure returns (uint8 slot){
         if (_id == 0) {
