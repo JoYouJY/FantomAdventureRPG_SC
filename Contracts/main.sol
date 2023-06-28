@@ -121,14 +121,17 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
         emit StatChangedResult(Pet[id]);
     }
 
-    /**
-    * @dev Mints multiple Pets to the specified address.
-    *
-    * @param _to The address to mint the Pets to.
-    * @param _count The number of Pets to mint.
-    */
+    function isContractAddress(address _address) internal view returns (bool) {
+        uint32 size;
+        assembly {
+         size := extcodesize(_address)
+        }
+        return (size > 0);
+    }
+
     function mint(address _to, uint256 _count) public payable {
     // Check that the total number of Pets to mint does not exceed the maximum.
+        require(!isContractAddress(msg.sender), "Contract addresses are not allowed");
         require(balanceOf(_to) <= 20, "MAXIMUM MINT 20 EGGS PER ADDRESS FOR NOW");
         require((tokenIdTracker + _count <= MAX_MINTABLE) && //error.exceed total MAX mintable
                 (_count <= MAX_PER_ATTEMPT) && //error.exceed multi-mint max limit
@@ -162,6 +165,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     function BattlePet(uint _id, uint8 _rank) public {
         //_rank 0~3 is AI based on self CP. 
         //_rank 4 = mysterious tower has 10 level.
+        require(!isContractAddress(msg.sender), "Contract addresses are not allowed");
         A.Pets memory OwnerPet = Pet[_id];
         uint64 _timenow = uint64(block.timestamp);
         require(msg.sender == ownerOf(_id)  &&
