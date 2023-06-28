@@ -37,8 +37,8 @@ interface ContractArtifactInterface {
 
 contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
     constructor() ERC721("FantomAdventureRPG", "FARPG") {
-        setImageURL("https://ipfs.io/ipfs/QmPzePMhtYXBZQrD7fMuAMuks4tVcWyN2iGpgwX3kxBn5Y/");
-        setImageExtension(".jpg");
+        setImageURL("https://ipfs.io/ipfs/QmTuURiwRkvk6CSLGDphTcTVqjhVNyz2yfPzcdBkzGNmvY/");
+        setImageExtension(".gif");
     
     }
     
