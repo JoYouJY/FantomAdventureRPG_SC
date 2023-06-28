@@ -151,21 +151,20 @@ library core {
         ); 
     }
 
-    function HatchEgg(A.Pets memory _Egg, address _ownerof) 
+    function HatchEgg(A.Pets memory _Egg, address _ownerof) //due to story change in last minutes, change into BOX
     external view returns(A.Pets memory Pet) {
         Pet = _Egg;
         require(msg.sender == _ownerof, "xPermission");
         
-        require ((Pet.species <=4  //an egg
-                || Pet.time.endurance < block.timestamp || Pet.time.deadtime < block.timestamp ) //or dead
+        require ((Pet.species <=4 ) 
                 , "xPetStatusVspecies"); 
         A.powers memory _pwrs;
         uint64 timenow = uint64(block.timestamp);
-        if      (Pet.species==4)   {_pwrs = A.powers(28000,26,26,26);}//Amorp Egg //cut feature due to time limit
-        else if (Pet.species==3)   {_pwrs = A.powers(47000,35,9,20);} //Mech Egg
-        else if (Pet.species==2)   {_pwrs = A.powers(23000,15,38,24);} //Volant Egg
-        else if (Pet.species==1)   {_pwrs = A.powers(26000,45,19,10);} //Quaped Egg //cut feature due to time limit
-        else   /*Pet.species==0*/  {_pwrs = A.powers(24000,18,18,40);} //Biped Egg
+        if      (Pet.species==4)   {_pwrs = A.powers(28000,76,26,26);}
+        else if (Pet.species==3)   {_pwrs = A.powers(47000,85,9,20);} 
+        else if (Pet.species==2)   {_pwrs = A.powers(23000,65,38,24);} 
+        else if (Pet.species==1)   {_pwrs = A.powers(26000,95,19,10);} 
+        else   /*Pet.species==0*/  {_pwrs = A.powers(24000,68,18,40);} 
         Pet.species = Pet.species + 5;
         Pet.attribute.stage = 1;
         Pet.power = _pwrs;
@@ -193,18 +192,17 @@ library core {
         uint64 _enduranceleft = Pet.time.endurance-_timenow;
         if (Pet.time.deadtime >= _timenow && Pet.time.endurance >= _timenow) { //Alive & Active
             //Choose Your Food :p
-            if (_foodtype==6){_full = 9 hours; _weight = 9440; _happy = 10;}//Salmon gain life at main contract! **********
-            else if (_foodtype==5){_full = 11 hours; _weight = 3135; _happy = 9;} //big vege
-            else if (_foodtype==4){_full = 7 hours; _weight = 1662; _happy = 6;} //mid vege
-            else if (_foodtype==3){_full = 3 hours; _weight = 570; _happy = 3;} //grass
-            else if (_foodtype==2){_full = 12 hours; _weight = 25200; _happy = 11;} //Wagyu Meat
-            else if (_foodtype==1){_full = 8 hours; _weight = 12700; _happy = 8;} //Giant Meat
-            else {_full = 4 hours; _weight = 5000; _happy = 5;} // Meat 0
+            if (_foodtype==6){_full = 9 hours; _weight = 9440; _happy = 10;}
+            else if (_foodtype==5){_full = 11 hours; _weight = 3135; _happy = 9;} 
+            else if (_foodtype==4){_full = 7 hours; _weight = 1662; _happy = 6;} 
+            else if (_foodtype==3){_full = 3 hours; _weight = 570; _happy = 3;} 
+            else if (_foodtype==2){_full = 12 hours; _weight = 25200; _happy = 11;} 
+            else if (_foodtype==1){_full = 8 hours; _weight = 12700; _happy = 8;} 
+            else {_full = 4 hours; _weight = 5000; _happy = 5;} 
             //Eating
             Pet.attribute.weight = add32b(Pet.attribute.weight,_weight);
             Pet.time.endurance = add64b(Pet.time.endurance,_full);
             if (Pet.time.endurance-_timenow > FULL_ENDURANCE){ //Your Pet has too full
-                //Pet.exp = Pet.exp + uint32(10*(_full - (Pet.time.endurance - (_timenow+FULL_ENDURANCE))));
                 Pet.time.endurance = _timenow+FULL_ENDURANCE; //cap at FULL_ENDURANCE
                 Pet.attribute.happiness = sub8b(Pet.attribute.happiness,1);
             }else { // normal hours, :) happy
@@ -330,41 +328,41 @@ library core {
     }
 
     function battlingPet(uint8 rank, uint rand) external pure returns(A.Pets memory _BattlingPet) {
-        //rank 0 = stage1, 1= stage2, 2= stage3, 3=stage4
+        //rank 0 = stage1, 1= stage2, 2= stage3, 3=stage4 3->8->17->37
         _BattlingPet.attribute.id = 10001;
         _BattlingPet.attribute.stage = rank+1;
         _BattlingPet.family = uint16(_RandNumb((rand>>4)+(rand>>1),4,0));
         if (rank ==0 ) { 
-            _BattlingPet.species = uint8(_RandNumb(rand,9,5));
+            _BattlingPet.species = 8;
             _BattlingPet.attribute.weight = _RandNumb((rand>>5)+(rand>>1),2500,1000);
             _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+(rand>>1),40000,10000);
-            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),50,10));
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),50,40));
             _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+(rand>>1),50,10));
             _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+(rand>>1),50,10));
         } else if (rank == 1) {
-            _BattlingPet.species = uint8(_RandNumb(rand,22,10));
+            _BattlingPet.species = 17;
             _BattlingPet.attribute.weight = _RandNumb((rand>>5)+(rand>>1),4500,1500);
             _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+(rand>>1),130000,5000);
-            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),130,55));
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),130,95));
             _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+(rand>>1),130,55));
             _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+(rand>>1),130,55));
-            _BattlingPet.skill = [_BattlingPet.species,0,0];
+            _BattlingPet.skill = [17,0,0];
         } else if (rank == 2) {
-            _BattlingPet.species = uint8(_RandNumb(rand,42,23)); 
+            _BattlingPet.species = 37; 
             _BattlingPet.attribute.weight = _RandNumb((rand>>5)+(rand>>1),17500,1500);
             _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+(rand>>1),420000,145000);
-            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),350,155));
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),350,195));
             _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+(rand>>1),350,155));
             _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+(rand>>1),450,155));
-            _BattlingPet.skill = [uint8(_RandNumb(rand,22,10)),_BattlingPet.species,0];    
+            _BattlingPet.skill = [17,37,0];    
         } else /*if (rank == 3)*/{
-            _BattlingPet.species = uint8(_RandNumb(rand,63,43));
+            _BattlingPet.species = 54;
             _BattlingPet.attribute.weight = _RandNumb((rand>>5)+(rand>>1),25000,1500);
             _BattlingPet.power.hitpoints = _RandNumb((rand>>21)+(rand>>1),800000,275000);
-            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),590,275));
+            _BattlingPet.power.strength = uint16(_RandNumb((rand>>41)+(rand>>1),590,295));
             _BattlingPet.power.agility = uint16(_RandNumb((rand>>51)+(rand>>1),590,275));
             _BattlingPet.power.intellegence = uint16(_RandNumb((rand>>61)+(rand>>1),790,275));
-            _BattlingPet.skill = [uint8(_RandNumb(rand,22,10)),uint8(_RandNumb(rand,42,23)),_BattlingPet.species];   
+            _BattlingPet.skill = [17,37,54];   
         }
     }
 
@@ -397,16 +395,15 @@ library core {
             _TowerPet.power.agility = uint16(10+((TowerLevel*88)%50));
             _TowerPet.power.intellegence = uint16(10+((TowerLevel*33)%50));
             _chances = [1,8,1,0];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,40,21));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,60,41)); //intentionally skip
         } else if (TowerLevel <= 40 ) { //level2 stage 1
             _TowerPet.species = 7;
             _TowerPet.power.hitpoints = 18000+((TowerLevel*900)%18000);
             _TowerPet.power.strength = uint16(30+((TowerLevel*75)%50));
             _TowerPet.power.agility = uint16(30+((TowerLevel*88)%50));
             _TowerPet.power.intellegence = uint16(30+((TowerLevel*33)%50));
-            _TowerPet.skill = [_TowerPet.species,0,0];
             _chances = [1,7,2,0];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,60,41));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,80,41));
         } else if (TowerLevel <= 60 ) { //level3 stage 2
             _TowerPet.species = 10;
             _TowerPet.power.hitpoints = 35000+((TowerLevel*1900)%30000);
@@ -415,7 +412,7 @@ library core {
             _TowerPet.power.intellegence = uint16(70+((TowerLevel*33)%70));
             _TowerPet.skill = [10,0,0]; 
             _chances = [1,6,2,1];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,80,61));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,100,81)); //skip
         } else if (TowerLevel <= 80 ) { //level4 stage 2
             _TowerPet.species = 16;
             _TowerPet.power.hitpoints = 70000+((TowerLevel*1900)%70000);
@@ -424,7 +421,7 @@ library core {
             _TowerPet.power.intellegence = uint16(120+((TowerLevel*33)%120));
             _TowerPet.skill = [16,0,0]; 
             _chances = [1,6,2,1];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,100,81));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,120,81));
         } else if (TowerLevel <= 100 ) { //level5 stage 2
             _TowerPet.species = 17;
             _TowerPet.power.hitpoints = 100000+((TowerLevel*1900)%70000);
@@ -433,7 +430,7 @@ library core {
             _TowerPet.power.intellegence = uint16(180+((TowerLevel*33)%120));
             _TowerPet.skill = [17,0,0]; 
             _chances = [1,5,3,1];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,120,101));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,140,121));
         } else if (TowerLevel <= 120 ) { //level6 stage 3
             _TowerPet.species = 23;
             _TowerPet.power.hitpoints = 250000+((TowerLevel*1900)%130000);
@@ -442,7 +439,7 @@ library core {
             _TowerPet.power.intellegence = uint16(350+((TowerLevel*33)%120));
             _TowerPet.skill = [10,23,0]; 
             _chances = [0,5,4,1];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,140,121));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,160,121));
         } else if (TowerLevel <= 140 ) { //level7 stage 3
             _TowerPet.species = 30;
             _TowerPet.power.hitpoints = 350000+((TowerLevel*1900)%170000);
@@ -451,7 +448,7 @@ library core {
             _TowerPet.power.intellegence = uint16(550+((TowerLevel*33)%120));
             _TowerPet.skill = [16,30,0];
             _chances = [0,4,4,2]; 
-            _nextTowerLevel = uint8(_RandNumb(_deRand,160,141));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,180,161));
         } else if (TowerLevel <= 160 ) { //level8 stage 3
             _TowerPet.species = 37;
             _TowerPet.power.hitpoints = 450000+((TowerLevel*1900)%270000);
@@ -460,7 +457,7 @@ library core {
             _TowerPet.power.intellegence = uint16(660+((TowerLevel*33)%120));
             _TowerPet.skill = [17,37,0]; 
             _chances = [0,1,6,3];
-            _nextTowerLevel = uint8(_RandNumb(_deRand,180,161));
+            _nextTowerLevel = uint8(_RandNumb(_deRand,200,161));
         } else if (TowerLevel <= 180 ) { //level9 stage 4
             _TowerPet.species = 44;
             _TowerPet.power.hitpoints = 600000+((TowerLevel*1900)%300000);
@@ -493,28 +490,28 @@ library core {
         uint32 actionpoints1 = _Pet2.power.agility; //reverse, Pet2 slow, means Pet1 attack more times
         uint32 actionpoints2 = _Pet1.power.agility;
         uint8 weakness; //0 = nothing, 1 = more damage on Pet1, 2= more daamge on Pet2
-                //0 = Desolation, 1=Celestial, 2=Verdant, 3=Fantasy, 4=Abyss
-        //Celestial==Abyss==Desolation==Verdant==Fantasy
+                //0 = Red, 1=Yellow, 2=Green, 3=Blue, 4=Purple
+        //Yellow==Purple==Red==Green==Blue
         //1.2x against
-	    //Fantasy==Celestial==Verdant==Abyss==Desolation
-        if ( (_Pet1.family == 3 && _Pet2.family == 1) //Fantasy weaks against Celestial
-           ||(_Pet1.family == 1 && _Pet2.family == 4) //Celestial weaks against Abyss
-           ||(_Pet1.family == 2 && _Pet2.family == 0) //Verdant weaks against Desolation
-           ||(_Pet1.family == 4 && _Pet2.family == 2) //Abyss weaks against Verdant
-           ||(_Pet1.family == 0 && _Pet2.family == 3) //Desolation weaks against Fantasy
+	    //Blue==Yellow==Green==Purple==Red
+        if ( (_Pet1.family == 3 && _Pet2.family == 1) //Blue weaks against Yellow
+           ||(_Pet1.family == 1 && _Pet2.family == 4) //Yellow weaks against Purple
+           ||(_Pet1.family == 2 && _Pet2.family == 0) //Green weaks against Red
+           ||(_Pet1.family == 4 && _Pet2.family == 2) //Purple weaks against Green
+           ||(_Pet1.family == 0 && _Pet2.family == 3) //Red weaks against Blue
         ) 
         {weakness = 1;}
         //---
-        if ( (_Pet2.family == 3 && _Pet1.family == 1) //Fantasy weaks against Celestial
-           ||(_Pet2.family == 1 && _Pet1.family == 4) //Celestial weaks against Abyss
-           ||(_Pet2.family == 2 && _Pet1.family == 0) //Verdant weaks against Desolation
-           ||(_Pet2.family == 4 && _Pet1.family == 2) //Abyss weaks against Verdant
-           ||(_Pet2.family == 0 && _Pet1.family == 3) //Desolation weaks against Fantasy
+        if ( (_Pet2.family == 3 && _Pet1.family == 1) //Blue weaks against Yellow
+           ||(_Pet2.family == 1 && _Pet1.family == 4) //Yellow weaks against Purple
+           ||(_Pet2.family == 2 && _Pet1.family == 0) //Green weaks against Red
+           ||(_Pet2.family == 4 && _Pet1.family == 2) //Purple weaks against Green
+           ||(_Pet2.family == 0 && _Pet1.family == 3) //Red weaks against Blue
         ) 
         {weakness = 2;}
         // because who has less actionpoints move next
         //while<= 253 bit 1round 3 bit 15 rounds, means 45 bit
-        while (bit<=46 && _Pet1.power.hitpoints > 0 && _Pet2.power.hitpoints > 0 ){
+        while (bit<=253 && _Pet1.power.hitpoints > 0 && _Pet2.power.hitpoints > 0 ){
             if (actionpoints1 <= actionpoints2) { //Pet1 move
                 bit++; //bit ++ first, means set '0'
                 _deRand = (_deRand>>3)+(_deRand>>1);
@@ -570,41 +567,41 @@ library core {
         uint32 HAPPINESS = _attributes.happiness;
         uint32 DISCIPLINE = _attributes.discipline;
         if (SkillNumber == 0) {damage=STR*50; effort = 100;}
-        else if (SkillNumber == 10) {damage= 50*STR + 35*AGI ; effort = 160;}
+        else if (SkillNumber == 10) {damage= 50*STR + 35*AGI ; effort = 160;}   ///------- use this
         else if (SkillNumber == 11) {damage= 85*STR + 15*INT ; effort = 155;}
         else if (SkillNumber == 12) {damage= 115*STR ; effort = 200;}
         else if (SkillNumber == 13) {damage= 30*STR + 30*AGI + 30*INT ; effort = 150;}
         else if (SkillNumber == 14) {damage= 105*STR ; effort = 190;}
         else if (SkillNumber == 15) {damage= 40*STR + 63*AGI ; effort = 160;}
-        else if (SkillNumber == 16) {damage= 40*STR + 60*AGI ; effort = 170;}
-        else if (SkillNumber == 17) {damage= 80*STR + 35*INT ; effort = 195;}
+        else if (SkillNumber == 16) {damage= 40*STR + 60*AGI ; effort = 170;}   ///------- use this
+        else if (SkillNumber == 17) {damage= 80*STR + 35*INT ; effort = 195;}   ///------- use this
         else if (SkillNumber == 18) {damage= 90*STR + 40*INT ; effort = 220;}
         else if (SkillNumber == 19) {damage= 50*STR + 100*INT ; effort = 230;}
         else if (SkillNumber == 20) {damage= 150*STR ; effort = 230;}
         else if (SkillNumber == 21) {damage= 50*STR + 100*AGI ; effort = 230;}
         else if (SkillNumber == 22) {damage= 50*STR + 50*AGI + 50*INT ; effort = 230;}
-        else if (SkillNumber == 23) {damage= 75*STR + 125*AGI ; effort = 265;}
+        else if (SkillNumber == 23) {damage= 75*STR + 125*AGI ; effort = 265;}   ///------- use this
         else if (SkillNumber == 24) {damage= 135*STR + 75*AGI ; effort = 270;}
         else if (SkillNumber == 25) {damage= 200*AGI ; effort = 266;}
         else if (SkillNumber == 26) {damage= uint32((14*HP)/100) + 125*STR ; effort = 287;}
         else if (SkillNumber == 27) {damage= 90*STR + 90*AGI + 90*INT ; effort = 330;}
         else if (SkillNumber == 28) {damage= 225*STR ; effort = 290;}
         else if (SkillNumber == 29) {damage= 50*STR + 125*AGI ; effort = 258;}
-        else if (SkillNumber == 30) {damage= 90*STR + 110*AGI ; effort = 277;}
+        else if (SkillNumber == 30) {damage= 90*STR + 110*AGI ; effort = 277;}   ///------- use this
         else if (SkillNumber == 31) {damage= 150*STR + 50*AGI ; effort = 302;}
         else if (SkillNumber == 32) {damage= 165*STR + 175*DISCIPLINE ; effort = 298;}
         else if (SkillNumber == 33) {damage= 185*INT ; effort = 244;}
         else if (SkillNumber == 34) {damage= 55*STR + 140*INT ; effort = 280;}
         else if (SkillNumber == 35) {damage= 250*STR ; effort = 295;}
         else if (SkillNumber == 36) {damage= 210*STR ; effort = 300;}
-        else if (SkillNumber == 37) {damage= uint32((15*HP)/100) + 125*STR ; effort = 310;}
+        else if (SkillNumber == 37) {damage= uint32((15*HP)/100) + 125*STR ; effort = 310;}   ///------- use this
         else if (SkillNumber == 38) {damage= 125*STR + 40*AGI + 40*INT ; effort = 275;}
         else if (SkillNumber == 39) {damage= 185*STR + 50*AGI ; effort = 295;}
         else if (SkillNumber == 40) {damage= 158*STR + 50*AGI + 25*INT ; effort = 287;}
         else if (SkillNumber == 41) {damage= 160*STR + 50*INT + 175*HAPPINESS ; effort = 320;}
         else if (SkillNumber == 42) {damage= 160*STR +50*INT + 175*DISCIPLINE ; effort = 315;}
         else if (SkillNumber == 43) {damage= 185*STR + 100*AGI ; effort = 380;}
-        else if (SkillNumber == 44) {damage= 170*STR + 170*INT ; effort = 395;}
+        else if (SkillNumber == 44) {damage= 170*STR + 170*INT ; effort = 395;}   ///------- use this
         else if (SkillNumber == 45) {damage= uint32((25*HP)/100) + 100*STR ; effort = 376;}
         else if (SkillNumber == 46) {damage= 150*STR + 150*INT ; effort = 380;}
         else if (SkillNumber == 47) {damage= 325*STR ; effort = 400;}
@@ -614,10 +611,10 @@ library core {
         else if (SkillNumber == 51) {damage= 75*STR + 200*INT + 250*DISCIPLINE ; effort = 385;}
         else if (SkillNumber == 52) {damage= 150*STR + 125*AGI + 175*HAPPINESS ; effort = 370;}
         else if (SkillNumber == 53) {damage= 175*STR + 700*DISCIPLINE ; effort = 395;}
-        else if (SkillNumber == 54) {damage= 200*STR + 150*INT ; effort = 450;}
+        else if (SkillNumber == 54) {damage= 200*STR + 150*INT ; effort = 450;}   ///------- use this
         else if (SkillNumber == 55) {damage= 115*STR + 115*AGI + 115*INT ; effort = 400;}
         else if (SkillNumber == 56) {damage= 150*STR + 150*INT ; effort = 375;}
-        else if (SkillNumber == 57) {damage= 125*STR + 100*STR + 100*INT ; effort = 360;}
+        else if (SkillNumber == 57) {damage= 125*STR + 100*STR + 100*INT ; effort = 360;}   ///------- use this
         else if (SkillNumber == 58) {damage= 60*STR + 75*INT + 750*HAPPINESS ; effort = 380;}
         else if (SkillNumber == 59) {damage= 345*INT ; effort = 400;}
         else if (SkillNumber == 60) {damage= 225*STR + 85*AGI ; effort = 360;}
