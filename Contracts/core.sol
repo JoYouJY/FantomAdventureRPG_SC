@@ -209,7 +209,7 @@ library core {
                 Pet.attribute.happiness = add8b(Pet.attribute.happiness,_happy);
                 //Pet.exp = Pet.exp + uint32(10*(_full));
             }
-            Pet.exp = Pet.exp + 89*uint32((Pet.time.endurance-_timenow-_enduranceleft));
+            Pet.exp = Pet.exp + 170*uint32((Pet.time.endurance-_timenow-_enduranceleft));
         } 
         Pet = EVO.checkEvolve(Pet);
     }
@@ -634,7 +634,7 @@ library core {
         if ( _rank >= 4 ) { //means not fight training
             if (_win == true) { // if won
             
-                _exp = 820000;
+                _exp = 1620000;
                 _pwrstemp.hitpoints =15000;
                 _pwrstemp.strength =15;
                 _pwrstemp.agility =15;
@@ -644,7 +644,7 @@ library core {
                 _weight =3815;
                 
             } else { //lose...
-                _exp = 450000;
+                _exp = 950000;
                 _pwrstemp.hitpoints =6000;
                 _pwrstemp.strength =6;
                 _pwrstemp.agility =6;
