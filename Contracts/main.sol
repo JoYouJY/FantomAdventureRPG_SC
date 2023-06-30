@@ -188,10 +188,10 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
             require(TowerLevel[msg.sender] > 0, "TowerLevel 0");
             (BattlingPet,C._chances,_nextTowerLevel) = core.TowerPet(TowerLevel[msg.sender], rand);
         }
-        OwnerPet.power.hitpoints = OwnerPet.power.hitpoints + C.ABCD[0];
+        OwnerPet.power.hitpoints = OwnerPet.power.hitpoints + (C.ABCD[0]*1000);
         OwnerPet.power.strength = OwnerPet.power.strength + uint16(C.ABCD[1]);
         OwnerPet.power.agility = OwnerPet.power.agility + uint16(C.ABCD[2]);
-        OwnerPet.power.intellegence = OwnerPet.power.intellegence;   uint16(C.ABCD[3]);
+        OwnerPet.power.intellegence = OwnerPet.power.intellegence+ uint16(C.ABCD[3]);
         (Mon1Win,C.BattleRhythm, C.bit, C.damage) = core.battlePet(rand, OwnerPet, BattlingPet);
         
         if (_rank >3 && Mon1Win == true) {
@@ -206,7 +206,7 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
                 RewardLimitTimer[_id] = _timenow;
             } //otherwise, no reward.
         }
-        (Mon1Win,C.BattleRhythm, C.bit, C.damage) = core.battlePet(rand, Pet[_id], BattlingPet);
+        
         Pet[_id] = core.battlewinlosereward(Pet[_id], Mon1Win, _rank); //exp stars gain   
         Pet[_id].time.stamina += BATTLESTAMINA; // take up stamina
         emit Result(_id, Mon1Win, C.BattleRhythm, Pet[_id], BattlingPet,C.damage, C.bit); //done battle
@@ -310,27 +310,6 @@ contract Main is ERC721Enumerable, ERC721Burnable, Ownable {
                 Limit = DailyMaxReward[_id];
                 resettimer = RewardLimitTimer[_id];
             }
-    }
-//--------------------------------------
-//ONLY FOR TESTING
-    function cheatSTATS(uint _id) public {
-        Pet[_id].time.stamina = Pet[_id].time.stamina - 25 hours;
-        Pet[_id].time.deadtime = Pet[_id].time.deadtime + 24 hours;
-        Pet[_id].time.evolutiontime = uint64(block.timestamp);
-        Pet[_id].power.hitpoints = 550000;
-        Pet[_id].power.strength = 550;
-        Pet[_id].power.agility = 550;
-        Pet[_id].power.intellegence = 550;
-        Pet[_id].exp = Pet[_id].exp + 32132100;
-    }
-    function cheatKILL(uint _id) public {
-        Pet[_id].time.deadtime = Pet[_id].time.deadtime - 200 hours;
-    }
-    function cheatGOHUNGRY(uint _id) public {
-  //      Pet[_id].time.endurance = uint64(block.timestamp) +  1 hours; 
-    } 
-    function cheatRevive(uint _id) public {
-        Pet[_id].time.deadtime = Pet[_id].time.deadtime + 48 hours;
     }
 
 
