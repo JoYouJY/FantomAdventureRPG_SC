@@ -292,31 +292,31 @@ library Meta {
         } else if (_species==8) {
             name = "Youpling - Z";
         } else if (_species==10) {
-            name = "Youpling - X";
+            name = "Youphorn - X";
  
         } else if (_species==16) {
-            name = "Wingoid";
+            name = "Youphorn - Y";
  
         } else if (_species==17) {
-            name = "IO-der";
+            name = "Youphorn - Z";
  
         } else if (_species==23) {
-            name = "Steelhead";
+            name = "Yougon - X";
  
         } else if (_species==30) {
-            name = "Birdori";
+            name = "Yougon - Y";
  
         } else if (_species==37) {
-            name = "Ointank";
+            name = "Yougon - Z";
  
         } else if (_species==44) {
-            name = "Solanake";
+            name = "Youking - X";
  
         } else if (_species==54) {
-            name = "Mechindragon";
+            name = "Youking - Z";
  
         } else if (_species==57) {
-            name = "Feroth";
+            name = "Youking - Y";
  
         }
         //---  
